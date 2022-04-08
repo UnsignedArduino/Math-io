@@ -1,3 +1,5 @@
+const tile_size = 32;
+
 class Grid {
   constructor(cam) {
     this.camera = cam;
@@ -66,5 +68,33 @@ class Grid {
     for (const item of this.all_items) {
       item.draw(x, y, width, height);
     }
+  }
+}
+
+class GridItem {
+  constructor(cam) {
+    this.camera = cam;
+  }
+
+  update() {
+    
+  }
+
+  draw(x, y, width, height) {
+    
+  }
+}
+
+class BaseTile extends GridItem {
+  draw(x, y, width, height) {
+    push();
+    rectMode(CORNER);  // makes it x, y, width, height
+    stroke(51);
+    strokeWeight(1);
+    fill(190);
+    const draw_x = x + (this.grid_x * tile_size) - this.camera.x;
+    const draw_y = y + (this.grid_y * tile_size) - this.camera.y;
+    rect(draw_x, draw_y, tile_size, tile_size);
+    pop();
   }
 }

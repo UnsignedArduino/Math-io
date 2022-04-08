@@ -1,11 +1,13 @@
 class MathIO {
   constructor() {
-    this.camera = new Camera(width / 2, height / 2);
+    this.camera = new Camera(-(width / 2), -(height / 2));
     this.grid = new Grid(this.camera);
 
     this.things_to_manage = [
       this.grid
     ]
+
+    this.grid.add_item(new BaseTile(this.camera), 0, 0);
   }
 
   update() {
