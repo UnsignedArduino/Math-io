@@ -10,14 +10,14 @@ class Grid {
   }
 
   add_item(item, x, y) {
-    if (y > this.grid.length) {
-      while (this.grid.length < y) {
+    if (y >= this.grid.length) {
+      while (this.grid.length <= y) {
         this.grid.push([]);
       }
     }
     const row = this.grid[y];
-    if (x > row.length) {
-      while (row.length < x) {
+    if (x >= row.length) {
+      while (row.length <= x) {
         row.push([]);
       }
     }
