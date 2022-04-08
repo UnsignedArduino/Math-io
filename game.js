@@ -23,6 +23,9 @@ class MathIO {
         this.grid.add_item(new BaseTile(this.camera), x, y);
       }
     }
+
+    this.grid_cursor = new GridCursor(this.camera);
+    this.grid.add_item(this.grid_cursor, 0, 0);
   }
 
   on_mouse_drag() {
@@ -31,6 +34,13 @@ class MathIO {
     const dmouseY = pmouseY - mouseY;
     this.camera.x += dmouseX;
     this.camera.y += dmouseY;
+  }
+
+  cursor_loc() {
+    return createVector(
+      Math.floor((this.camera.x + mouseX) / tile_size),
+      Math.floor((this.camera.y + mouseY) / tile_size)
+    );
   }
 
   update() {
@@ -43,5 +53,17 @@ class MathIO {
     for (const item of this.things_to_manage) {
       item.draw(x, y, width, height);
     }
+    
+    push();
+    strokeWeight(0);
+    fill(0);
+    textSize(12);
+    textAlign(LEFT, BOTTOM);
+    const loc = this.cursor_loc();
+    const last_loc = this.grid_cursor.grid_loc;
+    this.grid.remove_item(last_loc.x, last_loc.y);
+    this.grid.add_item(this.grid_cursor, loc.x, loc.y);
+    text(loc.x + ", " + loc.y, mouseX, mouseY)
+    pop();
   }
 }

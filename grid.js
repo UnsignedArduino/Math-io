@@ -23,8 +23,7 @@ class Grid {
     }
     row[x] = item;
     this.grid[y] = row;
-    item["grid_x"] = x;
-    item["grid_y"] = y;
+    item.grid_loc = createVector(x, y);
     this.all_items.push(item);
   }
 
@@ -47,8 +46,7 @@ class Grid {
     }
     const item = row[x];
     if (item != undefined) {
-      item["grid_x"] = undefined;
-      item["grid_y"] = undefined;
+      item.grid_loc = undefined;
       const index = this.all_items.indexOf(item);
       if (index != -1) {
         this.all_items.splice(index, 1);
@@ -57,7 +55,7 @@ class Grid {
     row[x] = undefined;
     return item;
   }
-
+  
   update() {
     for (const item of this.all_items) {
       item.update();
@@ -85,6 +83,21 @@ class GridItem {
   }
 }
 
+class GridCursor extends GridItem {
+  draw(x, y, width, height) {
+    push();
+    rectMode(CORNER);  // makes it x, y, width, height
+    stroke(0);
+    strokeWeight(1);
+    noFill();
+    const size = tile_size * this.camera.zoom;
+    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
+    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
+    rect(draw_x, draw_y, size, size);
+    pop();
+  }
+}
+
 class BaseTile extends GridItem {
   draw(x, y, width, height) {
     push();
@@ -93,8 +106,8 @@ class BaseTile extends GridItem {
     strokeWeight(1);
     fill(190);
     const size = tile_size * this.camera.zoom;
-    const draw_x = x + (this.grid_x * size) - this.camera.x;
-    const draw_y = y + (this.grid_y * size) - this.camera.y;
+    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
+    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
     rect(draw_x, draw_y, size, size);
     pop();
   }
