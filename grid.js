@@ -92,9 +92,10 @@ class BaseTile extends GridItem {
     stroke(51);
     strokeWeight(1);
     fill(190);
-    const draw_x = x + (this.grid_x * tile_size) - this.camera.x;
-    const draw_y = y + (this.grid_y * tile_size) - this.camera.y;
-    rect(draw_x, draw_y, tile_size, tile_size);
+    const size = tile_size * this.camera.zoom;
+    const draw_x = x + (this.grid_x * size) - this.camera.x;
+    const draw_y = y + (this.grid_y * size) - this.camera.y;
+    rect(draw_x, draw_y, size, size);
     pop();
   }
 }
