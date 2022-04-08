@@ -10,6 +10,14 @@ class MathIO {
     this.grid.add_item(new BaseTile(this.camera), 0, 0);
   }
 
+  on_mouse_drag() {
+    // Allows us to pan around
+    const dmouseX = pmouseX - mouseX;
+    const dmouseY = pmouseY - mouseY;
+    this.camera.x += dmouseX;
+    this.camera.y += dmouseY;
+  }
+
   update() {
     for (const item of this.things_to_manage) {
       item.update();
