@@ -12,7 +12,7 @@ function setup() {
 function draw() {
   background(bg_color);
   game.update();
-  game.draw();
+  game.draw(0, 0, width, height);
 }
 
 function windowResized() {
