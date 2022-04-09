@@ -32,6 +32,9 @@ class Grid {
     if (row == undefined) {
       return undefined;
     } else {
+      if (Array.isArray(row[x]) && row[x].length === 0) {
+        row[x] = undefined;
+      }
       return row[x];
     }
   }
@@ -53,6 +56,7 @@ class Grid {
       }
     }
     row[x] = undefined;
+    this.grid[y] = row;
     return item;
   }
   

@@ -39,3 +39,8 @@ function windowResized() {
 function mouseDragged() {
   game.on_mouse_drag();
 }
+
+function mousePressed() {
+  game.on_mouse_press();
+  return false;
+}

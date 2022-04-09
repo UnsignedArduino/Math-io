@@ -22,6 +22,8 @@ class MathIO {
     group.widgets.push(this.game_group);
     
     this.things_to_manage.push(group);
+
+    this.selected_tile = GeneratorTile;
   }
   
   prepare_grid() {
@@ -33,18 +35,34 @@ class MathIO {
       }
     }
 
-    this.grid_cursor = new GridCursor(this.camera);
-    this.grid.add_item(this.grid_cursor, 0, 0);
-
     this.things_to_manage.push(this.grid);
   }
 
   on_mouse_drag() {
-    // Allows us to pan around
-    const dmouseX = pmouseX - mouseX;
-    const dmouseY = pmouseY - mouseY;
-    this.camera.x += dmouseX;
-    this.camera.y += dmouseY;
+    if (keyIsPressed && keyCode === CONTROL) {
+      // Allows us to pan around
+      const dmouseX = pmouseX - mouseX;
+      const dmouseY = pmouseY - mouseY;
+      this.camera.x += dmouseX;
+      this.camera.y += dmouseY;
+    }
+  }
+
+  on_mouse_press() {
+    const cursor = this.cursor_loc();
+    if (keyIsPressed && keyCode === CONTROL) {
+      return;
+    }
+    if (mouseButton === LEFT) {
+      this.grid.get_item(cursor.x, cursor.y);
+      if (this.grid.get_item(cursor.x, cursor.y) == undefined) {
+        this.grid.add_item(new this.selected_tile(this.camera), cursor.x, cursor.y);
+      }
+    } else if (mouseButton === RIGHT) {
+      if (this.grid.get_item(cursor.x, cursor.y) != undefined) {
+        this.grid.remove_item(cursor.x, cursor.y);
+      }
+    }
   }
 
   cursor_loc() {
@@ -71,10 +89,18 @@ class MathIO {
     textSize(12);
     textAlign(LEFT, BOTTOM);
     const loc = this.cursor_loc();
-    const last_loc = this.grid_cursor.grid_loc;
-    this.grid.remove_item(last_loc.x, last_loc.y);
-    this.grid.add_item(this.grid_cursor, loc.x, loc.y);
     text(loc.x + ", " + loc.y, mouseX, mouseY)
+    pop();
+    
+    push();
+    rectMode(CORNER);  // makes it x, y, width, height
+    stroke(0);
+    strokeWeight(1);
+    noFill();
+    const size = tile_size * this.camera.zoom;
+    const draw_x = (loc.x * size) - this.camera.x;
+    const draw_y = (loc.y * size) - this.camera.y;
+    rect(draw_x, draw_y, size, size);
     pop();
   }
 }
