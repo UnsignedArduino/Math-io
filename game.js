@@ -8,16 +8,25 @@ class MathIO {
   constructor() {
     this.camera = new Camera((map_center_x * tile_size) - (width / 2), 
                              (map_center_y * tile_size) - (height / 2));
-    this.grid = new Grid(this.camera);
 
-    this.things_to_manage = [
-      this.grid
-    ]
+    this.things_to_manage = [];
 
     this.prepare_grid();
+    this.prepare_ui();
   }
 
+  prepare_ui() {
+    const group = new WidgetGroup();
+    
+    this.game_group = new WidgetGroup();
+    group.widgets.push(this.game_group);
+    
+    this.things_to_manage.push(group);
+  }
+  
   prepare_grid() {
+    this.grid = new Grid(this.camera);
+    
     for (let x = map_center_x - 2; x < map_center_x + 2; x ++) {
       for (let y = map_center_y - 2; y < map_center_y + 2; y ++){
         this.grid.add_item(new BaseTile(this.camera), x, y);
@@ -26,6 +35,8 @@ class MathIO {
 
     this.grid_cursor = new GridCursor(this.camera);
     this.grid.add_item(this.grid_cursor, 0, 0);
+
+    this.things_to_manage.push(this.grid);
   }
 
   on_mouse_drag() {

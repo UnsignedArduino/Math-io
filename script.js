@@ -25,10 +25,10 @@ function draw() {
     last_fps = Math.round(frameRate());
   }
   push();
-  textAlign(RIGHT, TOP);
+  textAlign(LEFT, BOTTOM);
   textSize(12);
   fill(0);
-  text("FPS: " + last_fps, width - 10, 10);
+  text("FPS: " + last_fps, 10, height - 10);
   pop();
 }
 
