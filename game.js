@@ -59,7 +59,8 @@ class MathIO {
         this.grid.add_item(new this.selected_tile(this.camera), cursor.x, cursor.y);
       }
     } else if (mouseButton === RIGHT) {
-      if (this.grid.get_item(cursor.x, cursor.y) != undefined) {
+      const item = this.grid.get_item(cursor.x, cursor.y);
+      if (item != undefined && !(item instanceof BaseTile)) {
         this.grid.remove_item(cursor.x, cursor.y);
       }
     }
