@@ -73,7 +73,7 @@ class ConveyorTile extends Tile {
     strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
     fill(120, this.alpha);
     const size = tile_size * this.camera.zoom;
-    const some_size = Math.round(size * 0.2);
+    let some_size = Math.round(size * 0.2);
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
     const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
     const top_left = createVector(draw_x + some_size, draw_y + some_size);
@@ -109,7 +109,28 @@ class ConveyorTile extends Tile {
       } else if (this.out === south) {
         line(bottom_left.x + thickness, bottom_left.y - 1, bottom_right.x - thickness, bottom_right.y - 1);
       } else if (this.out === west) {
-        line(top_left.x, top_left.y + thickness, bottom_left.x + 1, bottom_left.y - thickness);
+        line(top_left.x + 1, top_left.y + thickness, bottom_left.x + 1, bottom_left.y - thickness);
+      }
+      strokeWeight(1);
+      stroke(0, this.alpha);
+      some_size = Math.round(size * 0.4);
+      const half_size = Math.round(size / 2);
+      const top = createVector(draw_x + half_size, draw_y + some_size);
+      const right = createVector(draw_x + size - some_size, draw_y + half_size);
+      const bottom = createVector(draw_x + half_size, draw_y + size - some_size);
+      const left = createVector(draw_x + some_size, draw_y + half_size);
+      if (this.out === north) {
+        line(left.x, left.y, top.x, top.y);
+        line(top.x, top.y, right.x, right.y);
+      } else if (this.out === east) {
+        line(top.x, top.y, right.x, right.y);
+        line(right.x, right.y, bottom.x, bottom.y);
+      } else if (this.out === south) {
+        line(right.x, right.y, bottom.x, bottom.y);
+        line(bottom.x, bottom.y, left.x, left.y);
+      } else if (this.out === west) {
+        line(bottom.x, bottom.y, left.x, left.y);
+        line(left.x, left.y, top.x, top.y);
       }
     }
     pop();

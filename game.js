@@ -189,7 +189,7 @@ class MathIO {
 
   change_in_dir(dir) {
     this.in_dir = dir;
-    if (this.in_dir === this.out_dir) {
+    if (this.selected_tile === ConveyorTile && this.in_dir === this.out_dir) {
       this.in_dir = (this.in_dir + 1) % 4;
     }
     console.log("in dir: " + this.in_dir);
@@ -199,7 +199,7 @@ class MathIO {
 
   change_out_dir(dir) {
     this.out_dir = dir;
-    if (this.in_dir === this.out_dir) {
+    if (this.selected_tile === ConveyorTile && this.in_dir === this.out_dir) {
       this.out_dir = (this.out_dir + 1) % 4;
     }
     console.log("in dir: " + this.in_dir);
