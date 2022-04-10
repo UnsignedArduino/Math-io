@@ -11,6 +11,8 @@ const ore_spots = 1000;
 const ore_spread = 0.5;
 const ore_spread_sub = 0.1;
 
+const all_tiles = [ExtractorTile, ConveyorTile];
+
 class MathIO {
   constructor() {
     this.camera = new Camera((map_center_x * tile_size) - (width / 2), 
@@ -31,7 +33,6 @@ class MathIO {
     this.things_to_manage.push(group);
 
     this.change_selected_tile(ExtractorTile);
-    this.change_selected_tile(ConveyorTile);
     this.change_in_dir(south);
     this.change_out_dir(north);
   }
@@ -122,10 +123,16 @@ class MathIO {
   }
 
   on_key_press() {
+    const code = key.charAt(0);
+    const char = code.charCodeAt(0)
     if (key === "r") {
       this.change_out_dir((this.out_dir + 1) % 4);
     } else if (key === "R") {
       this.change_in_dir((this.in_dir + 1) % 4);
+    } else if (char >= 49 &&  // char "1"
+               char < 49 + all_tiles.length) {
+      const i = parseInt(code, 10) - 1;
+      this.change_selected_tile(all_tiles[i]);
     }
     return false;
   }
@@ -194,7 +201,10 @@ class MathIO {
 
   change_selected_tile(new_tile) {
     this.selected_tile = new_tile;
+    console.log("selected tile: " + new_tile.name);
     this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir, 128);
+    this.change_in_dir(this.in_dir);
+    this.change_out_dir(this.out_dir);
   }
 
   change_in_dir(dir) {
