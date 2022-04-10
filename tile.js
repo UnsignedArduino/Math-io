@@ -51,6 +51,37 @@ class Tile extends GridItem {
     }
   }
 
+  get_next_tile(col, row) {
+    let new_loc = createVector(col, row);
+    if (this.out === north) {
+      new_loc = new_loc.add(0, -1);
+    } else if (this.out === east) {
+      new_loc = new_loc.add(1, 0);
+    } else if (this.out === south) {
+      new_loc = new_loc.add(0, 1);
+    } else if (this.out === west) {
+      new_loc = new_loc.add(-1, 0);
+    }
+    return this.main_grid.get_item(new_loc.x, new_loc.y);
+  }
+  
+  can_send_output(col, row) {
+    let next_tile = this.get_next_tile(col, row);
+    if (next_tile == undefined) {
+      return false;
+    }
+    return next_tile.can_accept_input();
+  }
+
+  send_output(col, row) {
+    if (!this.can_send_output(col, row)) {
+      return;
+    }
+    let next_tile = this.get_next_tile(col, row);
+    next_tile.accept_input(this.output_slot);
+    this.output_slot = undefined;
+  }
+
   draw_item(x, y) {
     if (this.output_slot != undefined) {
       this.output_slot.draw(x, y);
