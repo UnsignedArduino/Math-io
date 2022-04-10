@@ -1,3 +1,6 @@
+const bg_color = 220;
+const bg_ro_color = 200;
+
 const map_width = 1000;
 const map_height = 1000;
 
@@ -236,6 +239,8 @@ class MathIO {
   }
 
   draw(x, y, width, height) {
+    background(this.camera.zoom > 0.5 ? bg_color : bg_ro_color);
+    
     for (const item of this.things_to_manage) {
       item.draw(x, y, width, height);
     }

@@ -99,7 +99,7 @@ class ConveyorTile extends Tile {
     strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
     fill(120);
     const size = tile_size * this.camera.zoom;
-    let some_size = Math.round(size * 0.2);
+    let some_size = Math.round(size * 0.3);
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
     const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
     const top_left = createVector(draw_x + some_size, draw_y + some_size);

@@ -1,7 +1,5 @@
 p5.disableFriendlyErrors = true;
 
-const bg_color = 220;
-
 const window_diff = 20;
 
 const desired_fps = 60;
@@ -17,8 +15,6 @@ function setup() {
 }
 
 function draw() {
-  background(bg_color);
-  
   game.update();
   game.draw(0, 0, width, height);
 
