@@ -202,7 +202,7 @@ class MathIO {
   change_selected_tile(new_tile) {
     this.selected_tile = new_tile;
     console.log("selected tile: " + new_tile.name);
-    this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir, 128);
+    this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir);
     this.change_in_dir(this.in_dir);
     this.change_out_dir(this.out_dir);
   }
@@ -214,7 +214,7 @@ class MathIO {
     }
     console.log("in dir: " + this.in_dir);
     console.log("out dir: " + this.out_dir);
-    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, 128);
+    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir);
   }
 
   change_out_dir(dir) {
@@ -224,7 +224,7 @@ class MathIO {
     }
     console.log("in dir: " + this.in_dir);
     console.log("out dir: " + this.out_dir);
-    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, 128);
+    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir);
   }
   
   update() {

@@ -4,11 +4,10 @@ const south = 2;
 const west = 3;
 
 class Tile extends GridItem {
-  constructor(cam, in_dir, out_dir, alpha) {
+  constructor(cam, in_dir, out_dir) {
     super(cam);
     this.in = in_dir;
     this.out = out_dir;
-    this.alpha = alpha == undefined ? 255 : alpha;
   }
 }
 
@@ -16,9 +15,9 @@ class BaseTile extends Tile {
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51, this.alpha);
+    stroke(51);
     strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
-    fill(190, this.alpha);
+    fill(190);
     const size = tile_size * this.camera.zoom;
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
     const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
@@ -31,9 +30,9 @@ class ExtractorTile extends Tile {
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51, this.alpha);
+    stroke(51);
     strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
-    fill(160, this.alpha);
+    fill(160);
     const size = tile_size * this.camera.zoom;
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
     const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
@@ -69,9 +68,9 @@ class ConveyorTile extends Tile {
   draw(x, y, width, height) {
     push();
     rectMode(CORNERS);  // makes it x1, y1, x2, y2
-    stroke(51, this.alpha);
+    stroke(51);
     strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
-    fill(120, this.alpha);
+    fill(120);
     const size = tile_size * this.camera.zoom;
     let some_size = Math.round(size * 0.2);
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
@@ -101,7 +100,7 @@ class ConveyorTile extends Tile {
     if (this.camera.zoom > 0.5) {
       const thickness = 1;
       strokeWeight(2);
-      stroke(120, this.alpha);
+      stroke(120);
       if (this.out === north) {
         line(top_left.x + thickness, top_right.y + 1, top_right.x - thickness, top_right.y + 1);
       } else if (this.out === east) {
@@ -112,7 +111,7 @@ class ConveyorTile extends Tile {
         line(top_left.x + 1, top_left.y + thickness, bottom_left.x + 1, bottom_left.y - thickness);
       }
       strokeWeight(1);
-      stroke(0, this.alpha);
+      stroke(0);
       some_size = Math.round(size * 0.4);
       const half_size = Math.round(size / 2);
       const top = createVector(draw_x + half_size, draw_y + some_size);
@@ -145,7 +144,7 @@ class OreTile extends Tile {
     const half_size = size / 2;
     push();
     rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51, this.alpha);
+    stroke(51);
     strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
     fill(100);
     rect(draw_x, draw_y, size, size);
