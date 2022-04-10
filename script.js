@@ -1,3 +1,5 @@
+p5.disableFriendlyErrors = true;
+
 const bg_color = 220;
 
 const window_diff = 20;

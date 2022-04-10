@@ -1,11 +1,17 @@
 const tile_size = 32;
 
 class Grid {
-  constructor(cam) {
+  constructor(cam, rows, cols) {
     this.camera = cam;
-    this.grid = [
-      [undefined]
-    ];
+    this.grid = [];
+    this.rows = rows;
+    this.columns = cols;
+    // for (let y = 0; y < rows; y ++) {
+    //   this.grid.push([]);
+    //   for (let x = 0; x < cols; x ++) {
+    //     this.grid[y].push(undefined);
+    //   }
+    // }
     this.all_items = [];
   }
 
