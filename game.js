@@ -31,7 +31,8 @@ class MathIO {
     this.things_to_manage.push(group);
 
     this.change_selected_tile(ExtractorTile);
-    this.change_in_dir(north);
+    this.change_selected_tile(ConveyorTile);
+    this.change_in_dir(south);
     this.change_out_dir(north);
   }
   
@@ -128,10 +129,8 @@ class MathIO {
   on_key_press() {
     if (key === "r") {
       this.change_out_dir((this.out_dir + 1) % 4);
-      console.log("out dir: " + this.out_dir);
     } else if (key === "R") {
       this.change_in_dir((this.in_dir + 1) % 4);
-      console.log("in dir: " + this.in_dir);
     }
     return false;
   }
@@ -190,11 +189,21 @@ class MathIO {
 
   change_in_dir(dir) {
     this.in_dir = dir;
+    if (this.in_dir === this.out_dir) {
+      this.in_dir = (this.in_dir + 1) % 4;
+    }
+    console.log("in dir: " + this.in_dir);
+    console.log("out dir: " + this.out_dir);
     this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, 128);
   }
 
   change_out_dir(dir) {
     this.out_dir = dir;
+    if (this.in_dir === this.out_dir) {
+      this.out_dir = (this.out_dir + 1) % 4;
+    }
+    console.log("in dir: " + this.in_dir);
+    console.log("out dir: " + this.out_dir);
     this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, 128);
   }
   

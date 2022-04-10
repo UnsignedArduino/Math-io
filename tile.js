@@ -65,6 +65,74 @@ class ExtractorTile extends Tile {
   }
 }
 
+class ConveyorTile extends Tile {
+  draw(x, y, width, height) {
+    push();
+    rectMode(CORNERS);  // makes it x1, y1, x2, y2
+    stroke(51, this.alpha);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
+    fill(120, this.alpha);
+    const size = tile_size * this.camera.zoom;
+    const some_size = Math.round(size * 0.2);
+    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
+    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
+    const top_left = createVector(draw_x + some_size, draw_y + some_size);
+    const top_right = createVector(draw_x + size - some_size, draw_y + some_size);
+    const bottom_left = createVector(draw_x + some_size, draw_y + size - some_size);
+    const bottom_right = createVector(draw_x + size - some_size, draw_y + size - some_size);
+    if (this.in === north) {
+      rect(top_left.x, top_left.y - some_size, bottom_right.x, bottom_right.y);
+    } else if (this.in === east) {
+      rect(top_left.x, top_left.y, bottom_right.x + some_size, bottom_right.y);
+    } else if (this.in === south) {
+      rect(top_left.x, top_left.y, bottom_right.x, bottom_right.y + some_size);
+    } else if (this.in === west) {
+      rect(top_left.x - some_size, top_left.y, bottom_right.x, bottom_right.y);
+    }
+    if (this.out === north) {
+      rect(top_left.x, top_left.y - some_size - 1, top_right.x, top_right.y + 1);
+    } else if (this.out === east) {
+      rect(top_right.x - 1, top_right.y, bottom_right.x + some_size + 1, bottom_right.y);
+    } else if (this.out === south) {
+      rect(bottom_left.x, bottom_left.y - 1, bottom_right.x, bottom_right.y + some_size + 1);
+    } else if (this.out === west) {
+      rect(top_left.x - some_size - 1, top_left.y, bottom_left.x + 1, bottom_left.y);
+    }
+    if (this.camera.zoom > 0.5) {
+      const thickness = 1;
+      strokeWeight(2);
+      stroke(120, this.alpha);
+      if (this.out === north) {
+        line(top_left.x + thickness, top_right.y + 1, top_right.x - thickness, top_right.y + 1);
+      } else if (this.out === east) {
+        line(top_right.x - 1, top_right.y + thickness, top_right.x - 1, bottom_right.y - thickness);
+      } else if (this.out === south) {
+        line(bottom_left.x + thickness, bottom_left.y - 1, bottom_right.x - thickness, bottom_right.y - 1);
+      } else if (this.out === west) {
+        line(top_left.x, top_left.y + thickness, bottom_left.x + 1, bottom_left.y - thickness);
+      }
+    }
+    pop();
+    // if (this.camera.zoom > 0.5) {
+    //   push();
+    //   if (this.out === north) {
+    //     line(left.x, left.y, top.x, top.y);
+    //     line(top.x, top.y, right.x, right.y);
+    //   } else if (this.out === east) {
+    //     line(top.x, top.y, right.x, right.y);
+    //     line(right.x, right.y, bottom.x, bottom.y);
+    //   } else if (this.out === south) {
+    //     line(right.x, right.y, bottom.x, bottom.y);
+    //     line(bottom.x, bottom.y, left.x, left.y);
+    //   } else if (this.out === west) {
+    //     line(bottom.x, bottom.y, left.x, left.y);
+    //     line(left.x, left.y, top.x, top.y);
+    //   }
+    //   pop();
+    // }
+  }
+}
+
 class OreTile extends Tile {
   draw(x, y, width, height) {
     const size = tile_size * this.camera.zoom;
