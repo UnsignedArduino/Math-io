@@ -30,9 +30,9 @@ class MathIO {
     
     this.things_to_manage.push(group);
 
-    this.selected_tile = ExtractorTile;
-    this.in_dir = north;
-    this.out_dir = north;
+    this.change_selected_tile(ExtractorTile);
+    this.change_in_dir(north);
+    this.change_out_dir(north);
   }
   
   prepare_grids() {   
@@ -127,10 +127,10 @@ class MathIO {
 
   on_key_press() {
     if (key === "r") {
-      this.out_dir = (this.out_dir + 1) % 4;
+      this.change_out_dir((this.out_dir + 1) % 4);
       console.log("out dir: " + this.out_dir);
     } else if (key === "R") {
-      this.in_dir = (this.in_dir + 1) % 4;
+      this.change_in_dir((this.in_dir + 1) % 4);
       console.log("in dir: " + this.in_dir);
     }
     return false;
@@ -182,6 +182,21 @@ class MathIO {
       }
     }
   }
+
+  change_selected_tile(new_tile) {
+    this.selected_tile = new_tile;
+    this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir, 128);
+  }
+
+  change_in_dir(dir) {
+    this.in_dir = dir;
+    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, 128);
+  }
+
+  change_out_dir(dir) {
+    this.out_dir = dir;
+    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, 128);
+  }
   
   update() {
     for (const item of this.things_to_manage) {
@@ -205,15 +220,19 @@ class MathIO {
     pop();
 
     // cursor block
-    push();
-    rectMode(CORNER);  // makes it x, y, width, height
-    stroke(0);
-    strokeWeight(1);
-    noFill();
-    const size = tile_size * this.camera.zoom;
-    const draw_x = (loc.x * size) - this.camera.x;
-    const draw_y = (loc.y * size) - this.camera.y;
-    rect(draw_x, draw_y, size, size);
-    pop();
+    // push();
+    // rectMode(CORNER);  // makes it x, y, width, height
+    // stroke(0);
+    // strokeWeight(1);
+    // noFill();
+    // const size = tile_size * this.camera.zoom;
+    // const draw_x = (loc.x * size) - this.camera.x;
+    // const draw_y = (loc.y * size) - this.camera.y;
+    // rect(draw_x, draw_y, size, size);
+    // pop();
+
+    // cursor preview
+    this.cursor_tile.grid_loc = loc;
+    this.cursor_tile.draw(x, y, width, height);
   }
 }

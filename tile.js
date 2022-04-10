@@ -4,10 +4,11 @@ const south = 2;
 const west = 3;
 
 class Tile extends GridItem {
-  constructor(cam, in_dir, out_dir) {
+  constructor(cam, in_dir, out_dir, alpha) {
     super(cam);
     this.in = in_dir;
     this.out = out_dir;
+    this.alpha = alpha == undefined ? 255 : alpha;
   }
 }
 
@@ -15,9 +16,9 @@ class BaseTile extends Tile {
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51);
+    stroke(51, this.alpha);
     strokeWeight(1);
-    fill(190);
+    fill(190, this.alpha);
     const size = tile_size * this.camera.zoom;
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
     const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
@@ -30,9 +31,9 @@ class ExtractorTile extends Tile {
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51);
+    stroke(51, this.alpha);
     strokeWeight(1);
-    fill(160);
+    fill(160, this.alpha);
     const size = tile_size * this.camera.zoom;
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
     const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
@@ -72,7 +73,7 @@ class OreTile extends Tile {
     const half_size = size / 2;
     push();
     rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51);
+    stroke(51, this.alpha);
     strokeWeight(1);
     fill(100);
     rect(draw_x, draw_y, size, size);
