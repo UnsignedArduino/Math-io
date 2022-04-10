@@ -3,11 +3,36 @@ const east = 1;
 const south = 2;
 const west = 3;
 
+class Item extends GridItem {
+  constructor(cam, number) {
+    super(cam);
+    this.number = number;
+  }
+
+  draw(x, y, width, height) {
+    push();
+    stroke(0);
+    strokeWeight(2);
+    fill(255);
+    textSize(12 * this.camera.zoom);
+    textAlign(CENTER, CENTER);
+    text(this.number, x, y);
+    pop();
+  }
+}
+
 class Tile extends GridItem {
   constructor(cam, in_dir, out_dir) {
     super(cam);
     this.in = in_dir;
     this.out = out_dir;
+    this.output_slot = undefined;
+  }
+
+  draw_item(x, y) {
+    if (this.output_slot != undefined) {
+      this.output_slot.draw(x, y);
+    }
   }
 }
 
@@ -131,6 +156,7 @@ class ConveyorTile extends Tile {
         line(bottom.x, bottom.y, left.x, left.y);
         line(left.x, left.y, top.x, top.y);
       }
+      this.draw_item(draw_x + half_size, draw_y + half_size);
     }
     pop();
   }
