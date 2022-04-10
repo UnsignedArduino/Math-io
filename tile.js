@@ -17,7 +17,7 @@ class BaseTile extends Tile {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
     stroke(51, this.alpha);
-    strokeWeight(1);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
     fill(190, this.alpha);
     const size = tile_size * this.camera.zoom;
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
@@ -32,7 +32,7 @@ class ExtractorTile extends Tile {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
     stroke(51, this.alpha);
-    strokeWeight(1);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
     fill(160, this.alpha);
     const size = tile_size * this.camera.zoom;
     const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
@@ -134,23 +134,6 @@ class ConveyorTile extends Tile {
       }
     }
     pop();
-    // if (this.camera.zoom > 0.5) {
-    //   push();
-    //   if (this.out === north) {
-    //     line(left.x, left.y, top.x, top.y);
-    //     line(top.x, top.y, right.x, right.y);
-    //   } else if (this.out === east) {
-    //     line(top.x, top.y, right.x, right.y);
-    //     line(right.x, right.y, bottom.x, bottom.y);
-    //   } else if (this.out === south) {
-    //     line(right.x, right.y, bottom.x, bottom.y);
-    //     line(bottom.x, bottom.y, left.x, left.y);
-    //   } else if (this.out === west) {
-    //     line(bottom.x, bottom.y, left.x, left.y);
-    //     line(left.x, left.y, top.x, top.y);
-    //   }
-    //   pop();
-    // }
   }
 }
 
@@ -163,7 +146,7 @@ class OreTile extends Tile {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
     stroke(51, this.alpha);
-    strokeWeight(1);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
     fill(100);
     rect(draw_x, draw_y, size, size);
     pop();
