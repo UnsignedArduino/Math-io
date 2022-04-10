@@ -23,7 +23,7 @@ class MathIO {
     
     this.things_to_manage.push(group);
 
-    this.selected_tile = GeneratorTile;
+    this.selected_tile = ExtractorTile;
   }
   
   prepare_grid() {
@@ -40,12 +40,24 @@ class MathIO {
 
   on_mouse_drag() {
     if (keyIsPressed && keyCode === CONTROL) {
-      // Allows us to pan around
       const dmouseX = pmouseX - mouseX;
       const dmouseY = pmouseY - mouseY;
       this.camera.x += dmouseX;
       this.camera.y += dmouseY;
     }
+    return false;
+  }
+
+  on_mouse_wheel(event) {
+    const delta = event.delta;
+    if (keyIsPressed) {
+      if (keyCode === SHIFT) {
+        this.camera.x += delta;
+      }
+    } else {
+      this.camera.y += delta;
+    }
+    return false;
   }
 
   on_mouse_press() {
@@ -64,6 +76,7 @@ class MathIO {
         this.grid.remove_item(cursor.x, cursor.y);
       }
     }
+    return false;
   }
 
   cursor_loc() {

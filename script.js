@@ -37,10 +37,13 @@ function windowResized() {
 }
 
 function mouseDragged() {
-  game.on_mouse_drag();
+  return game.on_mouse_drag();
+}
+
+function mouseWheel(event) {
+  return game.on_mouse_wheel(event);
 }
 
 function mousePressed() {
-  game.on_mouse_press();
-  return false;
+  return game.on_mouse_press();
 }

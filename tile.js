@@ -13,7 +13,7 @@ class BaseTile extends GridItem {
   }
 }
 
-class GeneratorTile extends GridItem {
+class ExtractorTile extends GridItem {
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
