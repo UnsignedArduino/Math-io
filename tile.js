@@ -28,7 +28,27 @@ class Tile extends GridItem {
     this.out = out_dir;
     this.main_grid = main_grid;
     this.ore_grid = ore_grid;
+    this.input_count = 2;
+    this.input_slots = [undefined, undefined];
     this.output_slot = undefined;
+    this.output_slot = new Item(this.camera, 1);
+  }
+
+  can_accept_input() {
+    for (let slot of this.input_slots) {
+      if (slot == undefined) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  accept_input(item) {
+    for (let i = 0; i < this.input_count; i ++) {
+      if (this.input_slots[i] == undefined) {
+        this.input_slots[i] = item;
+      }
+    }
   }
 
   draw_item(x, y) {
@@ -39,6 +59,14 @@ class Tile extends GridItem {
 }
 
 class BaseTile extends Tile {
+  can_accept_input() {
+    return true;
+  }
+
+  accept_input(item) {
+    // base tile just eats everything
+  }
+  
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
