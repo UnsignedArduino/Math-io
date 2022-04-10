@@ -7,7 +7,7 @@ const map_center_y = map_height / 2;
 const zoom_diff = 0.1;
 
 const ore_seed = "math_io_ore";
-const ore_spots = 100;
+const ore_spots = 1000;
 const ore_spread = 0.5;
 const ore_spread_sub = 0.1;
 

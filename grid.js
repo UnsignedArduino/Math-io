@@ -73,8 +73,15 @@ class Grid {
   }
 
   draw(x, y, width, height) {
+    const screen_top_row = Math.floor(this.camera.y / tile_size / this.camera.zoom);
+    const screen_bottom_row = Math.floor((this.camera.y + height) / tile_size / this.camera.zoom);
+    const screen_left_col = Math.floor(this.camera.x / tile_size / this.camera.zoom);
+    const screen_right_col = Math.floor((this.camera.x + width) / tile_size / this.camera.zoom);
     for (const item of this.all_items) {
-      item.draw(x, y, width, height);
+      if (item.grid_loc.x >= screen_left_col && item.grid_loc.x <= screen_right_col &&
+          item.grid_loc.y >= screen_top_row && item.grid_loc.y <= screen_bottom_row) {
+        item.draw(x, y, width, height);
+      }
     }
   }
 }
