@@ -4,6 +4,8 @@ const map_height = 1000;
 const map_center_x = map_width / 2;
 const map_center_y = map_height / 2;
 
+const zoom_diff = 0.1;
+
 const ore_seed = "math_io_ore";
 const ore_spots = 100;
 const ore_spread = 0.5;
@@ -79,6 +81,7 @@ class MathIO {
       this.camera.x += dmouseX;
       this.camera.y += dmouseY;
     }
+    this.restrain_cam();
     return false;
   }
 
@@ -87,10 +90,21 @@ class MathIO {
     if (keyIsPressed) {
       if (keyCode === SHIFT) {
         this.camera.x += delta;
+      } else if (keyCode === CONTROL) {
+        let new_zoom;
+        if (delta < 0) {
+          new_zoom = this.camera.zoom + zoom_diff;
+        } else {
+          new_zoom = this.camera.zoom - zoom_diff;
+        }
+        new_zoom = Math.min(Math.max(new_zoom, 0 + zoom_diff), 2);
+        new_zoom = Math.round(new_zoom * 10) / 10;
+        this.set_zoom(new_zoom);
       }
     } else {
       this.camera.y += delta;
     }
+    this.restrain_cam();
     return false;
   }
 
@@ -115,11 +129,51 @@ class MathIO {
 
   cursor_loc() {
     return createVector(
-      Math.floor((this.camera.x + mouseX) / tile_size),
-      Math.floor((this.camera.y + mouseY) / tile_size)
+      Math.floor((this.camera.x + mouseX) / tile_size / this.camera.zoom),
+      Math.floor((this.camera.y + mouseY) / tile_size / this.camera.zoom)
     );
   }
 
+  set_zoom(new_zoom) {
+    const previous_loc = createVector(
+      (this.camera.x + mouseX) / this.camera.zoom,
+      (this.camera.y + mouseY) / this.camera.zoom
+    );
+    console.log("new zoom: " + new_zoom);
+    this.camera.zoom = new_zoom;
+    const new_loc = createVector(
+      (this.camera.x + mouseX) / this.camera.zoom,
+      (this.camera.y + mouseY) / this.camera.zoom
+    );
+    const diff_loc = previous_loc.sub(new_loc);
+    const adjusted_loc = diff_loc.mult(this.camera.zoom);
+    this.camera.x += adjusted_loc.x;
+    this.camera.y += adjusted_loc.y;
+  }
+
+  restrain_cam() {
+    const screen_top_row = Math.floor(this.camera.y / tile_size / this.camera.zoom);
+    let screen_bottom_row = Math.floor((this.camera.y + height) / tile_size / this.camera.zoom);
+    const screen_left_col = Math.floor(this.camera.x / tile_size / this.camera.zoom);
+    let screen_right_col = Math.floor((this.camera.x + width) / tile_size / this.camera.zoom);
+    if (screen_top_row < 0) {
+      this.camera.y = 0;
+    } else if (screen_bottom_row >= map_height) {
+      while (screen_bottom_row >= map_height) {
+        this.camera.y --;
+        screen_bottom_row = Math.floor((this.camera.y + height) / tile_size / this.camera.zoom);
+      }
+    }
+    if (screen_left_col < 0) {
+      this.camera.x = 0;
+    } else if (screen_right_col >= map_width) {
+      while (screen_right_col >= map_width) {
+        this.camera.x --;
+        screen_right_col = Math.floor((this.camera.x + width) / tile_size / this.camera.zoom);
+      }
+    }
+  }
+  
   update() {
     for (const item of this.things_to_manage) {
       item.update();
@@ -130,7 +184,8 @@ class MathIO {
     for (const item of this.things_to_manage) {
       item.draw(x, y, width, height);
     }
-    
+
+    // cursor location
     push();
     strokeWeight(0);
     fill(0);
@@ -139,7 +194,8 @@ class MathIO {
     const loc = this.cursor_loc();
     text(loc.x + ", " + loc.y, mouseX, mouseY)
     pop();
-    
+
+    // cursor block
     push();
     rectMode(CORNER);  // makes it x, y, width, height
     stroke(0);
@@ -150,5 +206,7 @@ class MathIO {
     const draw_y = (loc.y * size) - this.camera.y;
     rect(draw_x, draw_y, size, size);
     pop();
+
+    
   }
 }
