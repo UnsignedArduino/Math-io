@@ -31,22 +31,14 @@ class MathIO {
     this.things_to_manage.push(group);
 
     this.selected_tile = ExtractorTile;
+    this.in_dir = north;
+    this.out_dir = north;
   }
   
-  prepare_grids() {
-    this.grid = new Grid(this.camera, map_width, map_height);
-    for (let x = map_center_x - 2; x < map_center_x + 2; x ++) {
-      for (let y = map_center_y - 2; y < map_center_y + 2; y ++){
-        this.grid.add_item(new BaseTile(this.camera), x, y);
-      }
-    }
-    this.things_to_manage.push(this.grid);
-    
+  prepare_grids() {   
     this.ore_grid = new Grid(this.camera, map_width, map_height);
-    
     const seeder = xmur3(ore_seed);
     const rander = sfc32(seeder(), seeder(), seeder(), seeder());
-    
     const generate_blob = (x, y, chance) => {
       this.ore_grid.get_item(x, y);
       this.ore_grid.add_item(new OreTile(this.camera), x, y);
@@ -63,15 +55,21 @@ class MathIO {
         generate_blob(x - 1, y, chance - ore_spread_sub)
       }
     }
-    
     for (let i = 0; i < ore_spots; i ++) {
       const x = Math.round(rander() * map_width);
       const y = Math.round(rander() * map_height);
       console.log((i + 1) + "/" + ore_spots + ": " + x + ", " + y);
       generate_blob(x, y, ore_spread);
     }
-    
     this.things_to_manage.push(this.ore_grid);
+
+    this.grid = new Grid(this.camera, map_width, map_height);
+    for (let x = map_center_x - 2; x < map_center_x + 2; x ++) {
+      for (let y = map_center_y - 2; y < map_center_y + 2; y ++){
+        this.grid.add_item(new BaseTile(this.camera), x, y);
+      }
+    }
+    this.things_to_manage.push(this.grid);
   }
 
   on_mouse_drag() {
@@ -116,7 +114,7 @@ class MathIO {
     if (mouseButton === LEFT) {
       this.grid.get_item(cursor.x, cursor.y);
       if (this.grid.get_item(cursor.x, cursor.y) == undefined) {
-        this.grid.add_item(new this.selected_tile(this.camera), cursor.x, cursor.y);
+        this.grid.add_item(new this.selected_tile(this.camera, this.in_dir, this.out_dir), cursor.x, cursor.y);
       }
     } else if (mouseButton === RIGHT) {
       const item = this.grid.get_item(cursor.x, cursor.y);
@@ -206,7 +204,5 @@ class MathIO {
     const draw_y = (loc.y * size) - this.camera.y;
     rect(draw_x, draw_y, size, size);
     pop();
-
-    
   }
 }
