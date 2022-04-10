@@ -79,6 +79,10 @@ class MathIO {
       const dmouseY = pmouseY - mouseY;
       this.camera.x += dmouseX;
       this.camera.y += dmouseY;
+    } else {
+      if (this.camera.zoom > 0.5) {
+        this.maybe_add_stuff();
+      }
     }
     this.restrain_cam();
     return false;
@@ -108,20 +112,11 @@ class MathIO {
   }
 
   on_mouse_press() {
-    const cursor = this.cursor_loc();
     if (keyIsPressed && keyCode === CONTROL) {
       return;
     }
-    if (mouseButton === LEFT) {
-      this.grid.get_item(cursor.x, cursor.y);
-      if (this.grid.get_item(cursor.x, cursor.y) == undefined) {
-        this.grid.add_item(new this.selected_tile(this.camera, this.in_dir, this.out_dir), cursor.x, cursor.y);
-      }
-    } else if (mouseButton === RIGHT) {
-      const item = this.grid.get_item(cursor.x, cursor.y);
-      if (item != undefined && !(item instanceof BaseTile)) {
-        this.grid.remove_item(cursor.x, cursor.y);
-      }
+    if (this.camera.zoom > 0.5) {
+      this.maybe_add_stuff();
     }
     return false;
   }
@@ -178,6 +173,21 @@ class MathIO {
       while (screen_right_col >= map_width) {
         this.camera.x --;
         screen_right_col = Math.floor((this.camera.x + width) / tile_size / this.camera.zoom);
+      }
+    }
+  }
+
+  maybe_add_stuff() {
+    const cursor = this.cursor_loc();
+    if (mouseButton === LEFT) {
+      this.grid.get_item(cursor.x, cursor.y);
+      if (this.grid.get_item(cursor.x, cursor.y) == undefined) {
+        this.grid.add_item(new this.selected_tile(this.camera, this.in_dir, this.out_dir), cursor.x, cursor.y);
+      }
+    } else if (mouseButton === RIGHT) {
+      const item = this.grid.get_item(cursor.x, cursor.y);
+      if (item != undefined && !(item instanceof BaseTile)) {
+        this.grid.remove_item(cursor.x, cursor.y);
       }
     }
   }
