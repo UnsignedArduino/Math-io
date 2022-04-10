@@ -39,11 +39,13 @@ class MathIO {
   
   prepare_grids() {   
     this.ore_grid = new Grid(this.camera, map_width, map_height);
+    this.grid = new Grid(this.camera, map_width, map_height);
+    
     const seeder = xmur3(ore_seed);
     const rander = sfc32(seeder(), seeder(), seeder(), seeder());
     const generate_blob = (x, y, chance) => {
       this.ore_grid.get_item(x, y);
-      this.ore_grid.add_item(new OreTile(this.camera), x, y);
+      this.ore_grid.add_item(new OreTile(this.camera, undefined, undefined, this.grid, this.ore_grid), x, y);
       if (rander() < chance && y > 1) {
         generate_blob(x, y - 1, chance - ore_spread_sub)
       }
@@ -63,14 +65,14 @@ class MathIO {
       console.log((i + 1) + "/" + ore_spots + ": " + x + ", " + y);
       generate_blob(x, y, ore_spread);
     }
-    this.things_to_manage.push(this.ore_grid);
 
-    this.grid = new Grid(this.camera, map_width, map_height);
     for (let x = map_center_x - 2; x < map_center_x + 2; x ++) {
       for (let y = map_center_y - 2; y < map_center_y + 2; y ++){
-        this.grid.add_item(new BaseTile(this.camera), x, y);
+        this.grid.add_item(new BaseTile(this.camera, undefined, undefined, this.grid, this.ore_grid), x, y);
       }
     }
+
+    this.things_to_manage.push(this.ore_grid);
     this.things_to_manage.push(this.grid);
   }
 
@@ -189,7 +191,7 @@ class MathIO {
     if (mouseButton === LEFT) {
       this.grid.get_item(cursor.x, cursor.y);
       if (this.grid.get_item(cursor.x, cursor.y) == undefined) {
-        this.grid.add_item(new this.selected_tile(this.camera, this.in_dir, this.out_dir), cursor.x, cursor.y);
+        this.grid.add_item(new this.selected_tile(this.camera, this.in_dir, this.out_dir, this.grid, this.ore_grid), cursor.x, cursor.y);
       }
     } else if (mouseButton === RIGHT) {
       const item = this.grid.get_item(cursor.x, cursor.y);
@@ -202,7 +204,7 @@ class MathIO {
   change_selected_tile(new_tile) {
     this.selected_tile = new_tile;
     console.log("selected tile: " + new_tile.name);
-    this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir);
+    this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir, this.grid, this.ore_grid);
     this.change_in_dir(this.in_dir);
     this.change_out_dir(this.out_dir);
   }
@@ -214,7 +216,7 @@ class MathIO {
     }
     console.log("in dir: " + this.in_dir);
     console.log("out dir: " + this.out_dir);
-    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir);
+    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, this.grid, this.ore_grid);
   }
 
   change_out_dir(dir) {
@@ -224,7 +226,7 @@ class MathIO {
     }
     console.log("in dir: " + this.in_dir);
     console.log("out dir: " + this.out_dir);
-    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir);
+    this.cursor_tile = new this.selected_tile(this.camera, this.in_dir, this.out_dir, this.grid, this.ore_grid);
   }
   
   update() {

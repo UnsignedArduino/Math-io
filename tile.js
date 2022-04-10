@@ -22,10 +22,12 @@ class Item extends GridItem {
 }
 
 class Tile extends GridItem {
-  constructor(cam, in_dir, out_dir) {
+  constructor(cam, in_dir, out_dir, main_grid, ore_grid) {
     super(cam);
     this.in = in_dir;
     this.out = out_dir;
+    this.main_grid = main_grid;
+    this.ore_grid = ore_grid;
     this.output_slot = undefined;
   }
 
