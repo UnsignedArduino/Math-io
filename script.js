@@ -49,3 +49,7 @@ function mouseWheel(event) {
 function mousePressed() {
   return game.on_mouse_press();
 }
+
+function keyPressed() {
+  return game.on_key_press();
+}

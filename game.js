@@ -125,6 +125,17 @@ class MathIO {
     return false;
   }
 
+  on_key_press() {
+    if (key === "r") {
+      this.out_dir = (this.out_dir + 1) % 4;
+      console.log("out dir: " + this.out_dir);
+    } else if (key === "R") {
+      this.in_dir = (this.in_dir + 1) % 4;
+      console.log("in dir: " + this.in_dir);
+    }
+    return false;
+  }
+
   cursor_loc() {
     return createVector(
       Math.floor((this.camera.x + mouseX) / tile_size / this.camera.zoom),
