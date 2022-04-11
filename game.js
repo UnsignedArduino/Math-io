@@ -255,20 +255,22 @@ class MathIO {
     text(loc.x + ", " + loc.y, mouseX, mouseY)
     pop();
 
-    // cursor block
-    // push();
-    // rectMode(CORNER);  // makes it x, y, width, height
-    // stroke(0);
-    // strokeWeight(1);
-    // noFill();
-    // const size = tile_size * this.camera.zoom;
-    // const draw_x = (loc.x * size) - this.camera.x;
-    // const draw_y = (loc.y * size) - this.camera.y;
-    // rect(draw_x, draw_y, size, size);
-    // pop();
-
     // cursor preview
-    this.cursor_tile.grid_loc = loc;
-    this.cursor_tile.draw(x, y, width, height);
+    if (this.camera.zoom > 0.5) {
+      this.cursor_tile.grid_loc = loc;
+      this.cursor_tile.draw(x, y, width, height);
+    } else {
+      // cursor block
+      push();
+      rectMode(CORNER);  // makes it x, y, width, height
+      stroke(0);
+      strokeWeight(1);
+      noFill();
+      const size = tile_size * this.camera.zoom;
+      const draw_x = (loc.x * size) - this.camera.x;
+      const draw_y = (loc.y * size) - this.camera.y;
+      rect(draw_x, draw_y, size, size);
+      pop();
+    }
   }
 }
