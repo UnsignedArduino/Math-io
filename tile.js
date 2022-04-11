@@ -31,7 +31,6 @@ class Tile extends GridItem {
     this.input_count = 2;
     this.input_slots = (new Array(this.input_count)).fill(undefined);
     this.output_slot = undefined;
-    this.output_slot = new Item(this.camera, 1);
   }
 
   can_accept_input(col, row) {
@@ -149,6 +148,37 @@ class BaseTile extends Tile {
 }
 
 class ExtractorTile extends Tile {
+  can_accept_input(col, row) {
+    return false;  // extractors don't accept
+  }
+
+  accept_input(item) {
+    // do nothing with the items
+  }
+  
+  can_send_output(col, row) {
+    let next_tile = this.get_next_tile(col, row);
+    if (next_tile == undefined) {
+      return false;
+    }
+    return next_tile.can_accept_input(col, row);
+  }
+
+  send_output(col, row) {
+    if (!this.can_send_output(col, row)) {
+      return;
+    }
+    let next_tile = this.get_next_tile(col, row);
+    next_tile.accept_input(new Item(this.camera, 1));
+  }
+
+  update(col, row) {
+    if (!this.can_send_output(col, row)) {
+      return;
+    }
+    this.send_output(col, row);
+  }
+  
   draw(x, y, width, height) {
     push();
     rectMode(CORNER);  // makes it x, y, width, height
