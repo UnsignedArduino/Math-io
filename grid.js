@@ -66,9 +66,13 @@ class Grid {
     return item;
   }
   
-  update() {
-    for (const item of this.all_items) {
-      item.update(item.grid_loc.x, item.grid_loc.y);
+  update(full_update) {
+    if (full_update == undefined || !full_update) {
+      for (const item of this.all_items) {
+        item.update(item.grid_loc.x, item.grid_loc.y);
+      }
+    } else {
+      this.update();
     }
   }
 

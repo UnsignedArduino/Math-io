@@ -1,3 +1,7 @@
+// TODO: 
+// - Make extractors only work on ores
+// - Don't update tiles if they will reference an (un?)updated tile
+
 const bg_color = 220;
 const bg_ro_color = 200;
 
@@ -16,6 +20,8 @@ const ore_spread_sub = 0.1;
 
 const all_tiles = [ExtractorTile, ConveyorTile];
 
+const update_time = 100;  // ms per grid update
+
 class MathIO {
   constructor() {
     this.camera = new Camera((map_center_x * tile_size) - (width / 2), 
@@ -25,6 +31,8 @@ class MathIO {
 
     this.prepare_grids();
     this.prepare_ui();
+
+    this.last_grid_update = millis();
   }
 
   prepare_ui() {
@@ -234,7 +242,13 @@ class MathIO {
   
   update() {
     for (const item of this.things_to_manage) {
-      item.update();
+      if (item !== this.grid) {
+        item.update();
+      }
+    }
+    if (millis() - this.last_grid_update > update_time) {
+      this.last_grid_update = millis();
+      this.grid.update(true);
     }
   }
 

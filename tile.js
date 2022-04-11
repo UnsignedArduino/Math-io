@@ -33,6 +33,15 @@ class Tile extends GridItem {
     this.output_slot = undefined;
   }
 
+  tiles_will_reference(col, row) {
+    const touch = [];
+    const next_tile = this.get_next_tile(col, row);
+    if (next_tile != undefined) {
+      touch.push(next_tile);
+    }
+    return touch;
+  }
+
   can_accept_input(col, row) {
     for (let slot of this.input_slots) {
       if (slot == undefined) {
@@ -157,6 +166,9 @@ class ExtractorTile extends Tile {
   }
   
   can_send_output(col, row) {
+    if (this.ore_grid.get_item(col, row) == undefined) {
+      return false;
+    }
     let next_tile = this.get_next_tile(col, row);
     if (next_tile == undefined) {
       return false;
