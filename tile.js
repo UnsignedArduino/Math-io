@@ -29,12 +29,12 @@ class Tile extends GridItem {
     this.main_grid = main_grid;
     this.ore_grid = ore_grid;
     this.input_count = 2;
-    this.input_slots = [undefined, undefined];
+    this.input_slots = (new Array(this.input_count)).fill(undefined);
     this.output_slot = undefined;
     this.output_slot = new Item(this.camera, 1);
   }
 
-  can_accept_input() {
+  can_accept_input(col, row) {
     for (let slot of this.input_slots) {
       if (slot == undefined) {
         return true;
@@ -68,9 +68,15 @@ class Tile extends GridItem {
   can_send_output(col, row) {
     let next_tile = this.get_next_tile(col, row);
     if (next_tile == undefined) {
+      // console.log("can't send cause no tile");
       return false;
     }
-    return next_tile.can_accept_input();
+    // if (next_tile.can_accept_input(col, row)) {
+    //   console.log("can send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
+    // } else {
+    //   console.log("can't send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
+    // }
+    return next_tile.can_accept_input(col, row);
   }
 
   send_output(col, row) {
@@ -79,7 +85,28 @@ class Tile extends GridItem {
     }
     let next_tile = this.get_next_tile(col, row);
     next_tile.accept_input(this.output_slot);
+    // console.log("sent " + this.output_slot + " to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y);
     this.output_slot = undefined;
+  }
+
+  process_items() {
+    const item1 = this.input_slots[0];
+    const item2 = this.input_slots[1];
+    this.input_slots.fill(undefined);
+    // process items here
+    // right now this will eat items
+    // return a new item to send it out
+    return undefined;
+  }
+  
+  update(col, row) {
+    if (!this.can_send_output(col, row)) {
+      return;
+    } else if (this.output_slot == undefined) {
+      return;
+    }
+    this.output_slot = this.process_items();
+    this.send_output(col, row);
   }
 
   draw_item(x, y) {
@@ -90,12 +117,21 @@ class Tile extends GridItem {
 }
 
 class BaseTile extends Tile {
-  can_accept_input() {
+  can_accept_input(col, row) {
     return true;
   }
 
   accept_input(item) {
-    // base tile just eats everything
+    // eat input for now
+  }
+  
+  can_send_output(col, row) {
+    // base tile doesn't need to send anything
+    return false;
+  }
+
+  send_output(col, row) {
+    // base tile doesn't need to send anything
   }
   
   draw(x, y, width, height) {
@@ -151,6 +187,30 @@ class ExtractorTile extends Tile {
 }
 
 class ConveyorTile extends Tile {
+  constructor(cam, in_dir, out_dir, main_grid, ore_grid) {
+    super(cam, in_dir, out_dir, main_grid, ore_grid);
+    this.input_count = 0;
+    this.input_slots = (new Array(this.input_count)).fill(undefined);
+  }
+
+  can_accept_input(col, row) {
+    const previous_tile = this.main_grid.get_item(col, row);
+    if (this.output_slot != undefined) {
+      return false;
+    }
+    return previous_tile.out === ((this.in + 2) % 4);
+  }
+  
+  accept_input(item) {
+    this.output_slot = item;
+  }
+  
+  process_items() {
+    const item1 = this.output_slot;
+    this.output_slot = undefined;
+    return item1;
+  }
+  
   draw(x, y, width, height) {
     push();
     rectMode(CORNERS);  // makes it x1, y1, x2, y2

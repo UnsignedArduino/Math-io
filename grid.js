@@ -68,7 +68,7 @@ class Grid {
   
   update() {
     for (const item of this.all_items) {
-      item.update();
+      item.update(item.grid_loc.x, item.grid_loc.y);
     }
   }
 
