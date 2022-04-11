@@ -3,11 +3,11 @@ const east = 1;
 const south = 2;
 const west = 3;
 
-
 class Item extends GridItem {
   constructor(cam, number) {
     super(cam);
     this.number = number;
+    this.moved = false;
   }
 
   draw(x, y, width, height) {
@@ -80,6 +80,18 @@ class Tile extends GridItem {
     // } else {
     //   console.log("can't send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
     // }
+    for (const item of this.input_slots) {
+      if (item == undefined) {
+        continue;
+      } else if (item.moved) {
+        // console.log("cannot send item cause it moved already");
+        return false;
+      }
+    }
+    // if (this.output_slot != undefined && this.output_slot.moved) {
+    //   console.log("cannot send item cause it moved already");
+    //   return false;
+    // }
     return next_tile.can_accept_input(col, row);
   }
 
@@ -89,6 +101,8 @@ class Tile extends GridItem {
     }
     let next_tile = this.get_next_tile(col, row);
     next_tile.accept_input(this.output_slot);
+    this.output_slot.moved = true;
+    // console.log("moved item");
     // console.log("sent " + this.output_slot + " to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y);
     this.output_slot = undefined;
   }
@@ -177,7 +191,10 @@ class ExtractorTile extends Tile {
       return;
     }
     let next_tile = this.get_next_tile(col, row);
-    next_tile.accept_input(new Item(this.camera, 1));
+    const item = new Item(this.camera, 1);
+    item.moved = true;
+    // console.log("generated item moved");
+    next_tile.accept_input(item);
   }
 
   update(col, row) {
@@ -229,6 +246,32 @@ class ConveyorTile extends Tile {
     super(cam, in_dir, out_dir, main_grid, ore_grid);
     this.input_count = 0;
     this.input_slots = (new Array(this.input_count)).fill(undefined);
+  }
+
+  can_send_output(col, row) {
+    let next_tile = this.get_next_tile(col, row);
+    if (next_tile == undefined) {
+      // console.log("can't send cause no tile");
+      return false;
+    }
+    // if (next_tile.can_accept_input(col, row)) {
+    //   console.log("can send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
+    // } else {
+    //   console.log("can't send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
+    // }
+    // for (const item of this.input_slots) {
+    //   if (item == undefined) {
+    //     continue;
+    //   } else if (item.moved) {
+    //     console.log("cannot send item cause it moved already");
+    //     return false;
+    //   }
+    // }
+    if (this.output_slot != undefined && this.output_slot.moved) {
+      // console.log("cannot send item cause it moved already");
+      return false;
+    }
+    return next_tile.can_accept_input(col, row);
   }
 
   can_accept_input(col, row) {

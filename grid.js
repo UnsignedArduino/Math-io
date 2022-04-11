@@ -67,6 +67,12 @@ class Grid {
   }
   
   update() {
+    // console.log("--- new frame");
+    for (const item of this.all_items) {
+      if (item.output_slot instanceof Item) {
+        item.output_slot.moved = false;
+      }
+    }
     for (const item of this.all_items) {
       item.update(item.grid_loc.x, item.grid_loc.y);
     }
