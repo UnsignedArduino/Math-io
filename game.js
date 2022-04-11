@@ -244,7 +244,6 @@ class MathIO {
     }
     if (millis() - this.last_grid_update > update_time) {
       this.last_grid_update = millis();
-      this.grid.reorder_items();
       this.grid.update();
     }
   }

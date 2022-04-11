@@ -3,6 +3,7 @@ const east = 1;
 const south = 2;
 const west = 3;
 
+
 class Item extends GridItem {
   constructor(cam, number) {
     super(cam);
