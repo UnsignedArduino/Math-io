@@ -65,14 +65,16 @@ class Grid {
     this.grid[y] = row;
     return item;
   }
+
+  reorder_items() {
+    // this reorders the items so they are backwards from the conveyor belts direction
+    // this prevents items from teleporting like 5 conveyor belts a tick
+    
+  }
   
-  update(full_update) {
-    if (full_update == undefined || !full_update) {
-      for (const item of this.all_items) {
-        item.update(item.grid_loc.x, item.grid_loc.y);
-      }
-    } else {
-      this.update();
+  update() {
+    for (const item of this.all_items) {
+      item.update(item.grid_loc.x, item.grid_loc.y);
     }
   }
 

@@ -33,13 +33,8 @@ class Tile extends GridItem {
     this.output_slot = undefined;
   }
 
-  tiles_will_reference(col, row) {
-    const touch = [];
-    const next_tile = this.get_next_tile(col, row);
-    if (next_tile != undefined) {
-      touch.push(next_tile);
-    }
-    return touch;
+  tile_will_reference(col, row) {
+    return this.get_next_tile(col, row);
   }
 
   can_accept_input(col, row) {
@@ -124,7 +119,7 @@ class Tile extends GridItem {
   }
 }
 
-class BaseTile extends Tile {
+class BaseTile extends Tile {  
   can_accept_input(col, row) {
     return true;
   }

@@ -1,7 +1,3 @@
-// TODO: 
-// - Make extractors only work on ores
-// - Don't update tiles if they will reference an (un?)updated tile
-
 const bg_color = 220;
 const bg_ro_color = 200;
 
@@ -248,7 +244,8 @@ class MathIO {
     }
     if (millis() - this.last_grid_update > update_time) {
       this.last_grid_update = millis();
-      this.grid.update(true);
+      this.grid.reorder_items();
+      this.grid.update();
     }
   }
 
