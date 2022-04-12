@@ -58,7 +58,7 @@ class Tile extends GridItem {
     return false;
   }
 
-  accept_input(item) {
+  accept_input(item, col, row) {
     for (let i = 0; i < this.input_count; i ++) {
       if (this.input_slots[i] == undefined) {
         this.input_slots[i] = item;
@@ -110,7 +110,7 @@ class Tile extends GridItem {
       return;
     }
     let next_tile = this.get_next_tile(col, row);
-    next_tile.accept_input(this.output_slot);
+    next_tile.accept_input(this.output_slot, col, row);
     this.output_slot.moved = true;
     // console.log("moved item");
     // console.log("sent " + this.output_slot + " to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y);
@@ -145,12 +145,39 @@ class Tile extends GridItem {
   }
 }
 
+class OreTile extends Tile {
+  draw(x, y, width, height) {
+    const size = tile_size * this.camera.zoom;
+    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
+    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
+    const half_size = size / 2;
+    push();
+    rectMode(CORNER);  // makes it x, y, width, height
+    stroke(51);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
+    fill(100);
+    rect(draw_x, draw_y, size, size);
+    pop();
+    if (this.camera.zoom > 0.5) {
+      // text
+      push();
+      stroke(0);
+      strokeWeight(2);
+      fill(255);
+      textSize(12 * this.camera.zoom);
+      textAlign(CENTER, CENTER);
+      text("1", draw_x + half_size, draw_y + half_size);
+      pop();
+    }
+  }
+}
+
 class BaseTile extends Tile {  
   can_accept_input(col, row) {
     return true;
   }
 
-  accept_input(item) {
+  accept_input(item, col, row) {
     // eat input for now
   }
   
@@ -182,7 +209,7 @@ class ExtractorTile extends Tile {
     return false;  // extractors don't accept
   }
 
-  accept_input(item) {
+  accept_input(item, col, row) {
     // do nothing with the items
   }
   
@@ -205,7 +232,7 @@ class ExtractorTile extends Tile {
     const item = new Item(this.camera, 1);
     item.moved = true;
     // console.log("generated item moved");
-    next_tile.accept_input(item);
+    next_tile.accept_input(item, col, row);
   }
 
   update(col, row) {
@@ -293,7 +320,7 @@ class ConveyorTile extends Tile {
     return previous_tile.out === ((this.in + 2) % 4);
   }
   
-  accept_input(item) {
+  accept_input(item, col, row) {
     this.output_slot = item;
   }
   
@@ -390,11 +417,22 @@ class MergerTile extends Tile {
     super(cam, in_dir, out_dir, main_grid, ore_grid);
     this.input_count = 3;
     this.input_slots = (new Array(this.input_count)).fill(undefined);
-    this.last_slot = 0;
+    this.last_input = createVector(-1, -1);
   }
 
+  on_new_frame() {
+    super.on_new_frame();
+    this.last_input = createVector(-1, -1);
+  }
+  
   can_accept_input(col, row) {
     const previous_tile = this.main_grid.get_item(col, row);
+    const input_loc = createVector(col, row);
+    // console.log("last input (" + this.last_input.x + ", " + this.last_input.y + ")");
+    if (this.last_input.equals(input_loc)) {
+      // console.log("denying (" + col + ", " + row + ") because it was last input");
+      return false;
+    }
     let has_space = false;
     for (let slot of this.input_slots) {
       if (slot == undefined) {
@@ -404,25 +442,95 @@ class MergerTile extends Tile {
     }
     if (has_space) {
       return previous_tile.out !== (this.out + 2) % 4;
+      // if (previous_tile.out !== (this.out + 2) % 4) {
+      //   this.last_input = input_loc;
+      //   console.log("new last input (" + col + ", " + row + ")");
+      //   return true;
+      // } else {
+      //   return false;
+      // }
     } else {
       // console.log("no space");
       return false;
     }
   }
   
-  accept_input(item) {
+  accept_input(item, col, row) {
     for (let i = 0; i < this.input_count; i ++) {
       if (this.input_slots[i] == undefined) {
         this.input_slots[i] = item;
+        // console.log("accepted item " + item);
+        this.last_input = createVector(col, row);
+        break;
       }
     }
   }
-  
+
+  // ---
+  // duplicate, delete because logging
+  can_send_output(col, row) {
+    let next_tile = this.get_next_tile(col, row);
+    if (next_tile == undefined) {
+      // console.log("can't send cause no tile");
+      return false;
+    }
+    let found_unmoved = false;
+    for (const item of this.input_slots) {
+      if (item == undefined) {
+        continue;
+      } else if (!item.moved) {
+        found_unmoved = true;
+      }
+    }
+    if (!found_unmoved) {
+      return false;
+    }
+    // if (next_tile.can_accept_input(col, row)) {
+    //   console.log("can send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
+    // } else {
+    //   console.log("can't send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
+    // }
+    return next_tile.can_accept_input(col, row);
+  }
+
+  send_output(col, row) {
+    if (!this.can_send_output(col, row)) {
+      // console.log("can't send output")
+      return;
+    }
+    let next_tile = this.get_next_tile(col, row);
+    next_tile.accept_input(this.output_slot, col, row);
+    this.output_slot.moved = true;
+    // console.log("moved item");
+    // console.log("sent " + this.output_slot + " to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y);
+    this.output_slot = undefined;
+  }
+
+  update(col, row) {
+    // console.log("updating");
+    if (!this.can_send_output(col, row)) {
+      // console.log("can't send output");
+      return;
+    }
+    this.output_slot = this.process_items();
+    // console.log("after processing: " + this.output_slot);
+    if (this.output_slot == undefined) {
+      return;
+    }
+    // console.log("send output");
+    this.send_output(col, row);
+  }
+  // ----
+
   process_items() {
-    this.last_slot = (this.last_slot + 1) % this.input_count;
-    const item1 = this.input_slots[this.last_slot];
-    this.input_slots[this.last_slot] = undefined;
-    return item1;
+    for (let i = 0; i < this.input_count; i ++) {
+      const item = this.input_slots[i];
+      if (item != undefined) {
+        this.input_slots[i] = undefined;
+        return item;
+      }
+    }
+    return undefined;
   }
   
   draw(x, y, width, height) {
@@ -458,33 +566,6 @@ class MergerTile extends Tile {
         line(bottom.x, bottom.y, left.x, left.y);
         line(left.x, left.y, top.x, top.y);
       }
-    }
-  }
-}
-
-class OreTile extends Tile {
-  draw(x, y, width, height) {
-    const size = tile_size * this.camera.zoom;
-    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
-    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
-    const half_size = size / 2;
-    push();
-    rectMode(CORNER);  // makes it x, y, width, height
-    stroke(51);
-    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
-    fill(100);
-    rect(draw_x, draw_y, size, size);
-    pop();
-    if (this.camera.zoom > 0.5) {
-      // text
-      push();
-      stroke(0);
-      strokeWeight(2);
-      fill(255);
-      textSize(12 * this.camera.zoom);
-      textAlign(CENTER, CENTER);
-      text("1", draw_x + half_size, draw_y + half_size);
-      pop();
     }
   }
 }

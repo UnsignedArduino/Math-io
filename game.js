@@ -104,7 +104,7 @@ class MathIO {
       if (keyCode === SHIFT) {
         this.camera.x += d;
       } else if (keyCode === CONTROL) {
-        let new_zoom = this.camera.zoom - (d / 100);
+        let new_zoom = this.camera.zoom - (d > 0 ? 0.1 : -0.1);
         new_zoom = Math.min(Math.max(new_zoom, 0 + zoom_diff), 2);
         new_zoom = Math.round(new_zoom * 10) / 10;
         this.set_zoom(new_zoom);
