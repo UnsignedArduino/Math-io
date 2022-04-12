@@ -69,7 +69,7 @@ class MathIO {
     for (let i = 0; i < ore_spots; i ++) {
       const x = Math.round(rander() * map_width);
       const y = Math.round(rander() * map_height);
-      console.log((i + 1) + "/" + ore_spots + ": " + x + ", " + y);
+      // console.log((i + 1) + "/" + ore_spots + ": " + x + ", " + y);
       generate_blob(x, y, ore_spread);
     }
 
@@ -99,23 +99,18 @@ class MathIO {
   }
 
   on_mouse_wheel(event) {
-    const delta = event.delta;
+    const d = event.delta;
     if (keyIsPressed) {
       if (keyCode === SHIFT) {
-        this.camera.x += delta;
+        this.camera.x += d;
       } else if (keyCode === CONTROL) {
-        let new_zoom;
-        if (delta < 0) {
-          new_zoom = this.camera.zoom + zoom_diff;
-        } else {
-          new_zoom = this.camera.zoom - zoom_diff;
-        }
+        let new_zoom = this.camera.zoom - (d / 100);
         new_zoom = Math.min(Math.max(new_zoom, 0 + zoom_diff), 2);
         new_zoom = Math.round(new_zoom * 10) / 10;
         this.set_zoom(new_zoom);
       }
     } else {
-      this.camera.y += delta;
+      this.camera.y += d;
     }
     this.restrain_cam();
     return false;
