@@ -75,22 +75,21 @@ class Tile extends GridItem {
       // console.log("can't send cause no tile");
       return false;
     }
+    let found_unmoved = false;
+    for (const item of this.input_slots) {
+      if (item == undefined) {
+        continue;
+      } else if (!item.moved) {
+        found_unmoved = true;
+      }
+    }
+    if (!found_unmoved) {
+      return false;
+    }
     // if (next_tile.can_accept_input(col, row)) {
     //   console.log("can send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
     // } else {
     //   console.log("can't send to " + next_tile.grid_loc.x + ", " + next_tile.grid_loc.y)
-    // }
-    for (const item of this.input_slots) {
-      if (item == undefined) {
-        continue;
-      } else if (item.moved) {
-        // console.log("cannot send item cause it moved already");
-        return false;
-      }
-    }
-    // if (this.output_slot != undefined && this.output_slot.moved) {
-    //   console.log("cannot send item cause it moved already");
-    //   return false;
     // }
     return next_tile.can_accept_input(col, row);
   }
@@ -120,10 +119,11 @@ class Tile extends GridItem {
   update(col, row) {
     if (!this.can_send_output(col, row)) {
       return;
-    } else if (this.output_slot == undefined) {
-      return;
     }
     this.output_slot = this.process_items();
+    if (this.output_slot == undefined) {
+      return;
+    }
     this.send_output(col, row);
   }
 
@@ -291,6 +291,16 @@ class ConveyorTile extends Tile {
     this.output_slot = undefined;
     return item1;
   }
+
+  update(col, row) {
+    if (!this.can_send_output(col, row)) {
+      return;
+    } else if (this.output_slot == undefined) {
+      return;
+    }
+    this.output_slot = this.process_items();
+    this.send_output(col, row);
+  }
   
   draw(x, y, width, height) {
     push();
@@ -361,6 +371,83 @@ class ConveyorTile extends Tile {
       this.draw_item(draw_x + half_size, draw_y + half_size);
     }
     pop();
+  }
+}
+
+class MergerTile extends Tile {
+  constructor(cam, in_dir, out_dir, main_grid, ore_grid) {
+    super(cam, in_dir, out_dir, main_grid, ore_grid);
+    this.input_count = 3;
+    this.input_slots = (new Array(this.input_count)).fill(undefined);
+    this.last_slot = 0;
+  }
+
+  can_accept_input(col, row) {
+    const previous_tile = this.main_grid.get_item(col, row);
+    let has_space = false;
+    for (let slot of this.input_slots) {
+      if (slot == undefined) {
+        has_space = true;
+        break;
+      }
+    }
+    if (has_space) {
+      return previous_tile.out !== (this.out + 2) % 4;
+    } else {
+      // console.log("no space");
+      return false;
+    }
+  }
+  
+  accept_input(item) {
+    for (let i = 0; i < this.input_count; i ++) {
+      if (this.input_slots[i] == undefined) {
+        this.input_slots[i] = item;
+      }
+    }
+  }
+  
+  process_items() {
+    this.last_slot = (this.last_slot + 1) % this.input_count;
+    const item1 = this.input_slots[this.last_slot];
+    this.input_slots[this.last_slot] = undefined;
+    return item1;
+  }
+  
+  draw(x, y, width, height) {
+    push();
+    rectMode(CORNER);  // makes it x, y, width, height
+    stroke(51);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
+    fill(100);
+    const size = tile_size * this.camera.zoom;
+    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
+    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
+    rect(draw_x, draw_y, size, size);
+    pop();
+    if (this.camera.zoom > 0.5) {
+      strokeWeight(1);
+      stroke(0);
+      const some_size = Math.round(size * 0.4);
+      const half_size = Math.round(size / 2);
+      const top = createVector(draw_x + half_size, draw_y + some_size);
+      const right = createVector(draw_x + size - some_size, draw_y + half_size);
+      const bottom = createVector(draw_x + half_size, draw_y + size - some_size);
+      const left = createVector(draw_x + some_size, draw_y + half_size);
+      if (this.out === north) {
+        line(left.x, left.y, top.x, top.y);
+        line(top.x, top.y, right.x, right.y);
+      } else if (this.out === east) {
+        line(top.x, top.y, right.x, right.y);
+        line(right.x, right.y, bottom.x, bottom.y);
+      } else if (this.out === south) {
+        line(right.x, right.y, bottom.x, bottom.y);
+        line(bottom.x, bottom.y, left.x, left.y);
+      } else if (this.out === west) {
+        line(bottom.x, bottom.y, left.x, left.y);
+        line(left.x, left.y, top.x, top.y);
+      }
+    }
   }
 }
 

@@ -14,7 +14,7 @@ const ore_spots = 1000;
 const ore_spread = 0.5;
 const ore_spread_sub = 0.1;
 
-const all_tiles = [ExtractorTile, ConveyorTile];
+const all_tiles = [ExtractorTile, ConveyorTile, MergerTile];
 
 const update_time = 100;  // ms per grid update
 

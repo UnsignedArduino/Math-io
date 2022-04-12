@@ -72,6 +72,13 @@ class Grid {
       if (item.output_slot instanceof Item) {
         item.output_slot.moved = false;
       }
+      if (item != undefined) {
+        for (const i of item.input_slots) {
+          if (i instanceof Item) {
+            i.moved = false;
+          }
+        }
+      }
     }
     for (const item of this.all_items) {
       item.update(item.grid_loc.x, item.grid_loc.y);
