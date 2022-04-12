@@ -38,6 +38,17 @@ class Tile extends GridItem {
     return this.get_next_tile(col, row);
   }
 
+  on_new_frame() {
+    if (this.output_slot instanceof Item) {
+      this.output_slot.moved = false;
+    }
+    for (const i of this.input_slots) {
+      if (i instanceof Item) {
+        i.moved = false;
+      }
+    }
+  }
+
   can_accept_input(col, row) {
     for (let slot of this.input_slots) {
       if (slot == undefined) {
