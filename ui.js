@@ -46,6 +46,17 @@ const button_hover_color = "#D0D0D0";
 const button_click_color = "#9E9E9E";
 const button_disabled_color = "#505050";
 
+let all_buttons = [];
+
+function hovering_on_button() {
+  for (const b of all_buttons) {
+    if (b.hovering_on) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function create_button(text, x, y, width, height, on_click) {
   let btn = new Clickable();
   btn.text = text;
@@ -54,11 +65,14 @@ function create_button(text, x, y, width, height, on_click) {
   btn.width = width;
   btn.height = height;
   btn.enabled = true;
+  btn.hovering_on = false;
   btn.onOutside = () => {
     btn.color = btn.enabled ? button_color : button_disabled_color;
+    btn.hovering_on = false;
   };
   btn.onHover = () => {
     btn.color = btn.enabled ? button_hover_color : button_disabled_color;
+    btn.hovering_on = true;
   };
   btn.on_click = on_click;
   btn.onPress = () => {
