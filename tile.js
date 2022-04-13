@@ -564,6 +564,7 @@ class SplitterTile extends Tile {
     this.input_count = 3;
     this.input_slots = (new Array(this.input_count)).fill(undefined);
     this.last_processed = 0;
+    this.failures = 0;
   }
 
   on_new_frame() {
@@ -612,7 +613,15 @@ class SplitterTile extends Tile {
   }
 
   update(col, row) {
+    if (this.failures >= 3) {
+      this.failures = 0;
+      this.out = (this.out + 1) % 4;
+      if (this.out === this.in) {
+        this.out = (this.out + 1) % 4;
+      }
+    }
     if (!this.can_send_output(col, row)) {
+      this.failures ++;
       return;
     }
     this.output_slot = this.process_items();
