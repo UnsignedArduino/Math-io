@@ -568,10 +568,6 @@ class SplitterTile extends Tile {
 
   on_new_frame() {
     super.on_new_frame();
-    this.out = (this.out + 1) % 4;
-    if (this.out === this.in) {
-      this.out = (this.out + 1) % 4;
-    }
   }
   
   can_accept_input(col, row) {
@@ -612,6 +608,21 @@ class SplitterTile extends Tile {
         this.input_slots[this.last_processed] = undefined;
         return item;
       }
+    }
+  }
+
+  update(col, row) {
+    if (!this.can_send_output(col, row)) {
+      return;
+    }
+    this.output_slot = this.process_items();
+    if (this.output_slot == undefined) {
+      return;
+    }
+    this.send_output(col, row);
+    this.out = (this.out + 1) % 4;
+    if (this.out === this.in) {
+      this.out = (this.out + 1) % 4;
     }
   }
   
