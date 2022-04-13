@@ -613,7 +613,7 @@ class SplitterTile extends Tile {
   }
 
   update(col, row) {
-    if (this.failures >= 3) {
+    if (this.failures >= 2) {
       this.failures = 0;
       this.out = (this.out + 1) % 4;
       if (this.out === this.in) {
