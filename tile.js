@@ -513,3 +513,98 @@ class MergerTile extends Tile {
     }
   }
 }
+
+class SplitterTile extends Tile {
+  constructor(cam, in_dir, out_dir, main_grid, ore_grid) {
+    super(cam, in_dir, out_dir, main_grid, ore_grid);
+    this.input_count = 3;
+    this.input_slots = (new Array(this.input_count)).fill(undefined);
+    this.last_processed = 0;
+  }
+
+  on_new_frame() {
+    super.on_new_frame();
+    this.out = (this.out + 1) % 4;
+    if (this.out === this.in) {
+      this.out = (this.out + 1) % 4;
+    }
+  }
+  
+  can_accept_input(col, row) {
+    const previous_tile = this.main_grid.get_item(col, row);
+    if (this.free_slots() > 0) {
+      // if (previous_tile.out === (this.in + 2) % 4) {
+      //   console.log("can accept because right direction");
+      // } else {
+      //   console.log("can't accept input because wrong direction!");
+      // }
+      return previous_tile.out === (this.in + 2) % 4;
+    } else {
+      // console.log("can't accept because no free space");
+      return false;
+    }
+  }
+  
+  accept_input(item, col, row) {
+    for (let i = 0; i < this.input_count; i ++) {
+      if (this.input_slots[i] == undefined) {
+        this.input_slots[i] = item;
+        break;
+      }
+    }
+  }
+
+  process_items() {
+    for (const item in this.input_slots) {
+      if (item != undefined) {
+        continue;
+      }
+      return;
+    }
+    while (this.free_slots() < this.input_count) {
+      this.last_processed = (this.last_processed + 1) % this.input_count;
+      const item = this.input_slots[this.last_processed];
+      if (item != undefined) {
+        this.input_slots[this.last_processed] = undefined;
+        return item;
+      }
+    }
+  }
+  
+  draw(x, y, width, height) {
+    push();
+    rectMode(CORNER);  // makes it x, y, width, height
+    stroke(51);
+    strokeWeight(this.camera.zoom > 0.5 ? 1 : 0);
+    fill(90);
+    const size = tile_size * this.camera.zoom;
+    const draw_x = x + (this.grid_loc.x * size) - this.camera.x;
+    const draw_y = y + (this.grid_loc.y * size) - this.camera.y;
+    rect(draw_x, draw_y, size, size);
+    // text(this.direction_accepting + ", " + this.last_processed, draw_x, draw_y);
+    pop();
+    if (this.camera.zoom > 0.5) {
+      strokeWeight(1);
+      stroke(0);
+      const some_size = Math.round(size * 0.4);
+      const half_size = Math.round(size / 2);
+      const top = createVector(draw_x + half_size, draw_y + some_size);
+      const right = createVector(draw_x + size - some_size, draw_y + half_size);
+      const bottom = createVector(draw_x + half_size, draw_y + size - some_size);
+      const left = createVector(draw_x + some_size, draw_y + half_size);
+      if (this.in === north) {
+        line(left.x, left.y, top.x, top.y);
+        line(top.x, top.y, right.x, right.y);
+      } else if (this.in === east) {
+        line(top.x, top.y, right.x, right.y);
+        line(right.x, right.y, bottom.x, bottom.y);
+      } else if (this.in === south) {
+        line(right.x, right.y, bottom.x, bottom.y);
+        line(bottom.x, bottom.y, left.x, left.y);
+      } else if (this.in === west) {
+        line(bottom.x, bottom.y, left.x, left.y);
+        line(left.x, left.y, top.x, top.y);
+      }
+    }
+  }
+}
