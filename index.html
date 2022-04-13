@@ -9,15 +9,20 @@
     <main oncontextmenu="return false;">
       <!-- Where p5.js will add the canvas -->
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
-    <script src="/p5.clickable.js"></script>
-    <script src="/random.js"></script>
-    <script src="/ui.js"></script>
-    <script src="/camera.js"></script>
-    <script src="/grid.js"></script>
-    <script src="/tile.js"></script>
-    <script src="/game.js"></script>
-    <script src="/script.js"></script>
-    <script src="/on_page_console.js"></script>
+    <!-- Libraries -->
+    <script src="/js/libs/p5.min.js"></script>
+    <script src="/js/libs/p5.clickable.min.js"></script>
+    <!-- Utilities -->
+    <script src="/js/util/random.js"></script>
+    <script src="/js/util/ui.js"></script>
+    <!-- Actual game files -->
+    <script src="/js/game/camera.js"></script>
+    <script src="/js/game/grid.js"></script>
+    <script src="/js/game/tile.js"></script>
+    <script src="/js/game/game.js"></script>
+    <!-- The main script -->
+    <script src="/js/script.js"></script>
+    <!-- Shows a console on the web page itself, for easier debugging on restricted computers -->
+    <script src="/js/util/on_page_console.js"></script>
   </body>
 </html>
