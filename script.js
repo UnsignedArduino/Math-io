@@ -23,6 +23,7 @@ function draw() {
     last_fps = Math.round(frameRate());
   }
   push();
+  strokeWeight(0);
   textAlign(LEFT, BOTTOM);
   textSize(12);
   fill(0);
