@@ -491,24 +491,68 @@ class MergerTile extends Tile {
     if (this.camera.zoom > 0.5) {
       strokeWeight(1);
       stroke(0);
-      const some_size = Math.round(size * 0.4);
       const half_size = Math.round(size / 2);
-      const top = createVector(draw_x + half_size, draw_y + some_size);
-      const right = createVector(draw_x + size - some_size, draw_y + half_size);
-      const bottom = createVector(draw_x + half_size, draw_y + size - some_size);
-      const left = createVector(draw_x + some_size, draw_y + half_size);
-      if (this.out === north) {
-        line(left.x, left.y, top.x, top.y);
-        line(top.x, top.y, right.x, right.y);
-      } else if (this.out === east) {
-        line(top.x, top.y, right.x, right.y);
-        line(right.x, right.y, bottom.x, bottom.y);
-      } else if (this.out === south) {
-        line(right.x, right.y, bottom.x, bottom.y);
-        line(bottom.x, bottom.y, left.x, left.y);
-      } else if (this.out === west) {
-        line(bottom.x, bottom.y, left.x, left.y);
-        line(left.x, left.y, top.x, top.y);
+      // directional lines
+      {
+        const some_size = Math.round(size * 0.2);
+        const top = createVector(draw_x + half_size, draw_y + some_size);
+        const right = createVector(draw_x + size - some_size, draw_y + half_size);
+        const bottom = createVector(draw_x + half_size, draw_y + size - some_size);
+        const left = createVector(draw_x + some_size, draw_y + half_size);
+        const center = createVector(draw_x + half_size, draw_y + half_size);
+        if (this.out !== north) {
+          line(top.x, top.y, center.x, center.y);
+        }
+        if (this.out !== east) {
+          line(right.x, right.y, center.x, center.y);
+        }
+        if (this.out !== south) {
+          line(bottom.x, bottom.y, center.x, center.y);
+        }
+        if (this.out !== west) {
+          line(left.x, left.y, center.x, center.y);
+        }
+      }
+      // smaller directional lines
+      {
+        const offset_size = Math.round(size * 0.3);
+        const top = createVector(draw_x + half_size, draw_y + offset_size);
+        const right = createVector(draw_x + size - offset_size, draw_y + half_size);
+        const bottom = createVector(draw_x + half_size, draw_y + size - offset_size);
+        const left = createVector(draw_x + offset_size, draw_y + half_size);
+        const center = createVector(draw_x + half_size, draw_y + half_size);
+        if (this.out === north) {
+          line(top.x, top.y, center.x, center.y);
+        } else if (this.out === east) {
+          line(right.x, right.y, center.x, center.y);
+        } else if (this.out === south) {
+          line(bottom.x, bottom.y, center.x, center.y);
+        } else if (this.out === west) {
+          line(left.x, left.y, center.x, center.y);
+        }
+      }
+      // arrow
+      {
+        strokeWeight(2);
+        const some_size = Math.round(size * 0.4);
+        const offset_size = Math.round(size * 0.1);
+        const top = createVector(draw_x + half_size, draw_y + some_size);
+        const right = createVector(draw_x + size - some_size, draw_y + half_size);
+        const bottom = createVector(draw_x + half_size, draw_y + size - some_size);
+        const left = createVector(draw_x + some_size, draw_y + half_size);
+        if (this.out === north) {
+          line(left.x, left.y - offset_size, top.x, top.y - offset_size);
+          line(top.x, top.y - offset_size, right.x, right.y - offset_size);
+        } else if (this.out === east) {
+          line(top.x + offset_size, top.y, right.x + offset_size, right.y);
+          line(right.x + offset_size, right.y, bottom.x + offset_size, bottom.y);
+        } else if (this.out === south) {
+          line(right.x, right.y + offset_size, bottom.x, bottom.y + offset_size);
+          line(bottom.x, bottom.y + offset_size, left.x, left.y + offset_size);
+        } else if (this.out === west) {
+          line(bottom.x - offset_size, bottom.y, left.x - offset_size, left.y);
+          line(left.x - offset_size, left.y, top.x - offset_size, top.y);
+        }
       }
     }
   }
