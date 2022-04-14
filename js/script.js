@@ -33,6 +33,7 @@ function draw() {
 
 function windowResized() {
   resizeCanvas(windowWidth - window_diff, windowHeight - window_diff);
+  game.on_resize();
 }
 
 function mouseDragged() {

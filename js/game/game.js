@@ -56,9 +56,9 @@ class MathIO {
     this.tile_hotbar.widgets = [
       this.extractor_btn, this.conveyor_btn, this.merger_btn, this.splitter_btn
     ];
-    this.tile_hotbar.width = width - (2 * hotbar_side_pad);
+    this.tile_hotbar.width = Math.min(width - (2 * hotbar_side_pad), width * 0.5);
     this.tile_hotbar.height = hotbar_height;
-    this.tile_hotbar.x = hotbar_side_pad;
+    this.tile_hotbar.x = (width / 2) - (this.tile_hotbar.width / 2);
     this.tile_hotbar.y = height - this.tile_hotbar.height - hotbar_bottom_pad;
     this.tile_hotbar.x_pad = 10;
 
@@ -104,6 +104,13 @@ class MathIO {
 
     this.things_to_manage.push(this.ore_grid);
     this.things_to_manage.push(this.grid);
+  }
+
+  on_resize() {
+    this.tile_hotbar.width = Math.min(width - (2 * hotbar_side_pad), width * 0.5);
+    this.tile_hotbar.height = hotbar_height;
+    this.tile_hotbar.x = (width / 2) - (this.tile_hotbar.width / 2);
+    this.tile_hotbar.y = height - this.tile_hotbar.height - hotbar_bottom_pad;
   }
 
   on_mouse_drag() {
