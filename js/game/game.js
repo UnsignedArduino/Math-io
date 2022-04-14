@@ -38,6 +38,14 @@ class MathIO {
   }
 
   prepare_ui() {
+    this.make_hotbar();
+
+    this.change_selected_tile(ExtractorTile);
+    this.change_in_dir(south);
+    this.change_out_dir(north);
+  }
+
+  make_hotbar() {
     this.tile_hotbar = new HorizontalWidgetGroup();
 
     this.extractor_btn = create_button("Extractor", 0, 0, 100, 50, () => {
@@ -61,10 +69,6 @@ class MathIO {
     this.tile_hotbar.x = (width / 2) - (this.tile_hotbar.width / 2);
     this.tile_hotbar.y = height - this.tile_hotbar.height - hotbar_bottom_pad;
     this.tile_hotbar.x_pad = 10;
-
-    this.change_selected_tile(ExtractorTile);
-    this.change_in_dir(south);
-    this.change_out_dir(north);
   }
   
   prepare_grids() {   
