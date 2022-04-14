@@ -9,12 +9,17 @@ const map_center_y = map_height / 2;
 
 const zoom_diff = 0.1;
 
+const hotbar_height = 50;
+const hotbar_side_pad = 100;
+const hotbar_bottom_pad = 10;
+
 const ore_seed = "math_io_ore";
 const ore_spots = 1000;
 const ore_spread = 0.5;
 const ore_spread_sub = 0.1;
 
 const all_tiles = [ExtractorTile, ConveyorTile, MergerTile, SplitterTile];
+const tile_buttons = ["extractor_btn", "conveyor_btn", "merger_btn", "splitter_btn"];
 
 const update_time = 100;  // ms per grid update
 
@@ -24,6 +29,7 @@ class MathIO {
                              (map_center_y * tile_size) - (height / 2));
 
     this.things_to_manage = [];
+    this.ui_things = [];
 
     this.prepare_grids();
     this.prepare_ui();
@@ -32,12 +38,29 @@ class MathIO {
   }
 
   prepare_ui() {
-    const group = new WidgetGroup();
+    this.tile_hotbar = new HorizontalWidgetGroup();
+
+    this.extractor_btn = create_button("Extractor", 0, 0, 100, 50, () => {
+      this.change_selected_tile(ExtractorTile);
+    });
+    this.conveyor_btn = create_button("Conveyor", 0, 0, 100, 50, () => {
+      this.change_selected_tile(ConveyorTile);
+    });
+    this.merger_btn = create_button("Merger", 0, 0, 100, 50, () => {
+      this.change_selected_tile(MergerTile);
+    });
+    this.splitter_btn = create_button("Splitter", 0, 0, 100, 50, () => {
+      this.change_selected_tile(SplitterTile);
+    });
     
-    this.game_group = new WidgetGroup();
-    group.widgets.push(this.game_group);
-    
-    this.things_to_manage.push(group);
+    this.tile_hotbar.widgets = [
+      this.extractor_btn, this.conveyor_btn, this.merger_btn, this.splitter_btn
+    ];
+    this.tile_hotbar.width = width - (2 * hotbar_side_pad);
+    this.tile_hotbar.height = hotbar_height;
+    this.tile_hotbar.x = hotbar_side_pad;
+    this.tile_hotbar.y = height - this.tile_hotbar.height - hotbar_bottom_pad;
+    this.tile_hotbar.x_pad = 10;
 
     this.change_selected_tile(ExtractorTile);
     this.change_in_dir(south);
@@ -190,6 +213,9 @@ class MathIO {
 
   maybe_add_stuff() {
     const cursor = this.cursor_loc();
+    if (hovering_on_button()) {
+      return;
+    }
     if (mouseButton === LEFT) {
       this.grid.get_item(cursor.x, cursor.y);
       if (this.grid.get_item(cursor.x, cursor.y) == undefined) {
@@ -209,6 +235,10 @@ class MathIO {
     this.cursor_tile = new new_tile(this.camera, this.in_dir, this.out_dir, this.grid, this.ore_grid);
     this.change_in_dir(this.in_dir);
     this.change_out_dir(this.out_dir);
+    for (const b of tile_buttons) {
+      this[b].enabled = true;
+    }
+    this[tile_buttons[all_tiles.indexOf(new_tile)]].enabled = false;
   }
 
   change_in_dir(dir) {
@@ -237,6 +267,7 @@ class MathIO {
         item.update();
       }
     }
+    this.tile_hotbar.update();
     if (millis() - this.last_grid_update > update_time) {
       this.last_grid_update = millis();
       this.grid.update();
@@ -260,22 +291,32 @@ class MathIO {
     text(loc.x + ", " + loc.y, mouseX, mouseY)
     pop();
 
-    // cursor preview
+    if (!hovering_on_button()) {
+      // cursor preview
+      if (this.camera.zoom > 0.5) {
+        this.cursor_tile.grid_loc = loc;
+        this.cursor_tile.draw(x, y, width, height);
+      } else {
+        // cursor block
+        push();
+        rectMode(CORNER);  // makes it x, y, width, height
+        stroke(0);
+        strokeWeight(1);
+        noFill();
+        const size = tile_size * this.camera.zoom;
+        const draw_x = (loc.x * size) - this.camera.x;
+        const draw_y = (loc.y * size) - this.camera.y;
+        rect(draw_x, draw_y, size, size);
+        pop();
+      }
+    }
+
+    for (const item of this.ui_things) {
+      item.draw(x, y, width, height);
+    }
+    // draw hotbar only if we are editing, which is zoom greater than 0.5x
     if (this.camera.zoom > 0.5) {
-      this.cursor_tile.grid_loc = loc;
-      this.cursor_tile.draw(x, y, width, height);
-    } else {
-      // cursor block
-      push();
-      rectMode(CORNER);  // makes it x, y, width, height
-      stroke(0);
-      strokeWeight(1);
-      noFill();
-      const size = tile_size * this.camera.zoom;
-      const draw_x = (loc.x * size) - this.camera.x;
-      const draw_y = (loc.y * size) - this.camera.y;
-      rect(draw_x, draw_y, size, size);
-      pop();
+      this.tile_hotbar.draw(x, y, width, height);
     }
   }
 }

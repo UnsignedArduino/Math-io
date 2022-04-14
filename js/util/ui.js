@@ -1,6 +1,50 @@
 class Widget {
   constructor() {
-    
+    this._x = 0;
+    this._y = 0;
+    this._width = 0;
+    this._height = 0;
+    this._enabled = true;
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set x(x) {
+    this._x = x;
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  set y(y) {
+    this._y = y;
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  set width(w) {
+    this._width = w;
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set height(h) {
+    this._height = h;
+  }
+
+  get enabled() {
+    return this._enabled;
+  }
+
+  set enabled(e) {
+    this._enabled = e;
   }
 
   update() {
@@ -18,6 +62,47 @@ class WidgetButton extends Widget {
     this.clickable = p5clickable;
   }
 
+  get x() {
+    return this.clickable.x;
+  }
+
+  set x(x) {
+    this.clickable.x = x;
+  }
+
+  get y() {
+    return this.clickable.y;
+  }
+
+  set y(y) {
+    this.clickable.y = y;
+  }
+
+  get width() {
+    return this.clickable.width;
+  }
+
+  set width(w) {
+    this.clickable.width = w;
+  }
+
+  get height() {
+    return this.clickable.height;
+  }
+
+  set height(h) {
+    this.clickable.height = h;
+  }
+
+  get enabled() {
+    return this._enabled;
+  }
+
+  set enabled(e) {
+    this._enabled = e;
+    this.clickable.enabled = e;
+  }
+  
   draw(x, y, width, height) {
     this.clickable.draw();
   }
@@ -26,6 +111,83 @@ class WidgetButton extends Widget {
 class WidgetGroup {
   constructor() {
     this.widgets = [];
+    this._x = 0;
+    this._y = 0;
+    this._width = 0;
+    this._height = 0;
+    this._x_pad = 0;
+    this._y_pad = 0;
+    this._enabled = true;
+    this.resize_widgets();
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set x(x) {
+    this._x = x;
+    this.resize_widgets();
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  set y(y) {
+    this._y = y;
+    this.resize_widgets();
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  set width(w) {
+    this._width = w;
+    this.resize_widgets();
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set height(h) {
+    this._height = h;
+    this.resize_widgets();
+  }
+
+  get x_pad() {
+    return this._x_pad;
+  }
+
+  set x_pad(p) {
+    this._x_pad = p;
+    this.resize_widgets();
+  }
+
+  get y_pad() {
+    return this._y_pad;
+  }
+
+  set y_pad(p) {
+    this._y_pad = p;
+    this.resize_widgets();
+  }
+
+  get enabled() {
+    return this._enabled;
+  }
+
+  set enabled(e) {
+    this._enabled = e;
+    for (const w of this.widgets) {
+      w.enabled = e;
+    }
+  }
+  
+  resize_widgets() {
+    // override in subclasses to order widgets
   }
 
   update() {
@@ -37,6 +199,22 @@ class WidgetGroup {
   draw(x, y, width, height) {
     for (let widget of this.widgets) {
       widget.draw(x, y, width, height);
+    }
+  }
+}
+
+class HorizontalWidgetGroup extends WidgetGroup {
+  resize_widgets() {
+    const new_width = (this.width - (this.widgets.length * this.x_pad)) / this.widgets.length;
+    const new_height = this.height;
+    let cur_x = this.x;
+    for (let i = 0; i < this.widgets.length; i ++) {
+      const widget = this.widgets[i];
+      widget.x = cur_x;
+      cur_x += new_width + this.x_pad;
+      widget.y = this.y;
+      widget.width = new_width;
+      widget.height = new_height;
     }
   }
 }
@@ -82,5 +260,6 @@ function create_button(text, x, y, width, height, on_click) {
     btn.color = button_click_color;
     btn.on_click();
   };
+  all_buttons.push(btn);
   return new WidgetButton(btn);
 }
