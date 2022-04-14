@@ -1,5 +1,5 @@
 const bg_color = 220;
-const bg_ro_color = 200;
+const bg_ro_color = 210;
 
 const map_width = 1000;
 const map_height = 1000;
